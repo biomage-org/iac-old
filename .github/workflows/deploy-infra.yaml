@@ -519,6 +519,21 @@ jobs:
               --username $user
           done < "infra/cluster-access/${{matrix.environment-name}}/cluster_admins_$CLUSTER_ENV"
 
+      - id: setup-datadog-cluster-agent
+        name: Setup Datadog cluster agent
+        run: |-
+          # Add Datadog
+          helm repo add datadog https://helm.datadoghq.com
+          helm repo update
+
+          helm upgrade datadog-agent datadog/datadog \
+            -f ./infra/datadog/values.yaml \
+            --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
+            --install
+
+          # Create RBAC for Datadog sidecar deployments in each pod
+          kubectl apply -f ./infra/datadog/datadog-agent-rbac.yaml
+
   report-if-failed:
     name: Report if workflow failed
     runs-on: ubuntu-20.04
