@@ -134,7 +134,7 @@ spec:
         - name: DD_SITE
           value: "datadoghq.eu"
         - name: DD_CLUSTER_NAME
-          value: "biomage-${{ .Values.myAccount.kubernetesEnv }}"
+          value: "biomage-${{ .Values.kubernetes.env }}"
         - name: DD_KUBERNETES_KUBELET_NODENAME
           valueFrom:
             fieldRef:
