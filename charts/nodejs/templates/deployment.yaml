@@ -120,3 +120,25 @@ spec:
         resources:
 {{ toYaml .Values.resources | indent 12 }}
 {{- end -}}
+
+    # Add Datadog monitoring for API production default
+{{ if and (contains "api" .Values.biomageCi.repo) (contains "biomage" .Values.myAcount.domainName) }}
+    {{ if and (eq .Values.biomageCi.sandboxId "default") (eq .Values.kubernetes.env "production") }}
+      - name: datadog-agent
+        image: datadog/agent
+        env:
+        - name: DD_API_KEY
+          value: {{ .Values.datadog.apiKey }}
+          ## Set DD_SITE to "datadoghq.eu" to send your
+          ## Agent data to the Datadog EU site
+        - name: DD_SITE
+          value: "datadoghq.eu"
+        - name: DD_CLUSTER_NAME
+          value: "biomage-${{ .Values.myAccount.kubernetesEnv }}"
+        - name: DD_KUBERNETES_KUBELET_NODENAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+    {{ end }}
+{{ end }}
