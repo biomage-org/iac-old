@@ -95,3 +95,4 @@ Resources:
                   - "iam:PassRole"
                 Resource: 
                   - !Sub "arn:aws:iam::${AWS::AccountId}:role/biomage-rds-${Environment}-RDSInvokeLambdaRole-*"
+
