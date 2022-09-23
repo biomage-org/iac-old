@@ -110,4 +110,3 @@ Resources:
       LogGroupName: !Sub "/aws/lambda/delete-s3-file-lambda-${Environment}"
       RetentionInDays: 1
       
-      
