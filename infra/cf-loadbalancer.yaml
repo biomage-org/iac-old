@@ -19,11 +19,11 @@ Resources:
         - Key: routing.http2.enabled
           Value: "true"
       Name: !Sub "k8s-${Environment}"
-      Scheme: internet-facing
+      Scheme: internal
       Subnets: 
         Fn::Split:
           - ','
-          - Fn::ImportValue: !Sub "eksctl-biomage-${Environment}-cluster::SubnetsPublic"
+          - Fn::ImportValue: !Sub "eksctl-biomage-${Environment}-cluster::SubnetsPrivate"
       Tags: 
         - Key: ingress.k8s.aws/resource
           Value: LoadBalancer
