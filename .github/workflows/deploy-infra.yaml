@@ -522,7 +522,7 @@ jobs:
       - id: setup-datadog-cluster-agent
         name: Setup Datadog cluster agent
         run: |-
-          # Add Datadog
+          ### Add Datadog cluster agent
           helm repo add datadog https://helm.datadoghq.com
           helm repo update
 
@@ -531,10 +531,14 @@ jobs:
             --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
             --install
 
-          # Create RBAC for Datadog sidecar deployments in each pod
+          ### Create RBAC for Datadog sidecar deployments
           kubectl apply -f ./infra/datadog/datadog-sidecar-rbac.yaml
 
-      
+      - id: setup-fargate-logging
+        name: Setup fargate logging
+        run: |-
+          # Setup fargate logging
+          kubectl apply -f ./infra/logging/fargate-fluentbit-config.yaml
 
   report-if-failed:
     name: Report if workflow failed
