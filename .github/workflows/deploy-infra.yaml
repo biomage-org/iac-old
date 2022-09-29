@@ -532,7 +532,9 @@ jobs:
             --install
 
           # Create RBAC for Datadog sidecar deployments in each pod
-          kubectl apply -f ./infra/datadog/datadog-agent-rbac.yaml
+          kubectl apply -f ./infra/datadog/datadog-sidecar-rbac.yaml
+
+      
 
   report-if-failed:
     name: Report if workflow failed
