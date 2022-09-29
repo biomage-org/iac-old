@@ -527,18 +527,43 @@ jobs:
           helm repo update
 
           helm upgrade datadog-agent datadog/datadog \
-            -f ./infra/datadog/values.yaml \
+            -f infra/datadog/values.yaml \
             --set datadog.apiKey=${{ secrets.DATADOG_API_KEY }} \
             --install
 
           ### Create RBAC for Datadog sidecar deployments
-          kubectl apply -f ./infra/datadog/datadog-sidecar-rbac.yaml
+          kubectl apply -f infra/datadog/datadog-sidecar-rbac.yaml
 
       - id: setup-fargate-logging
-        name: Setup fargate logging
+        name: Setup logging for Fargate pods
+        env:
+          AWS_ACCOUNT_ID: ${{ steps.setup-aws.outputs.aws-account-id }}
         run: |-
-          # Setup fargate logging
-          kubectl apply -f ./infra/logging/fargate-fluentbit-config.yaml
+          LOGGING_POLICY_NAME="eks-fargate-logging-policy"
+
+          # Apply FluentBit config in cluster
+          kubectl apply -f infra/fargate-logging/fargate-fluentbit-config.yaml
+
+          # Setup permissions
+          aws iam create-policy --policy-name $LOGGING_POLICY_NAME --policy-document infra/fargate-logging/fargate-logs-permissions.yaml
+
+          # Attach role for pipeline
+          PIPELINE_POD_EXEC_ROLE=$(aws eks describe-fargate-profile \
+            --cluster-name biomage-$CLUSTER_ENV \
+            --fargate-profile-name pipeline-default | jq -r '.fargateProfile.podExecutionRoleArn' | awk -F"/" '{print (NF>1)? $NF : ""}' )
+
+          aws iam attach-role-policy \
+          --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/$LOGGING_POLICY_NAME \
+          --role-name $PIPELINE_POD_EXEC_ROLE
+
+          # Attach role for worker
+          WORKER_POD_EXEC_ROLE=$(aws eks describe-fargate-profile \
+            --cluster-name biomage-$CLUSTER_ENV \
+            --fargate-profile-name worker-default | jq -r '.fargateProfile.podExecutionRoleArn' | awk -F"/" '{print (NF>1)? $NF : ""}' )
+
+          aws iam attach-role-policy \
+          --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/$LOGGING_POLICY_NAME \
+          --role-name $WORKER_POD_EXEC_ROLE
 
   report-if-failed:
     name: Report if workflow failed
