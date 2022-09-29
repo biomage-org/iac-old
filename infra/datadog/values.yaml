@@ -1,21 +1,19 @@
 # Datadog Agent with Logs, APM, Processes, and System Probe enabled
-
 targetSystem: "linux"
 datadog:
-  clusterAgent:
-    enabled: true
-    replicas: 1
-  agents:
-    enabled: false
-  clusterName: biomage-staging
-  tags: []
   logs:
-    enabled: true
-    containerCollectAll: false
+    enabled: false
   processAgent:
     enabled: true
     processCollection: true
   systemProbe:
     enableTCPQueueLength: false
-    enableOOMKill: true
+    enableOOMKill: false
     collectDNSStats: false
+  containerExclude:  "name:.*"
+  containerIncludeMetrics:  "name:biomage-node-chart namespace:flux"
+clusterAgent:
+  enabled: true
+  replicas: 2
+agents:
+  enabled: true
