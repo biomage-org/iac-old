@@ -11,7 +11,7 @@ datadog:
     enableOOMKill: false
     collectDNSStats: false
   containerExclude:  "name:.*"
-  containerIncludeMetrics:  "name:biomage-node-chart namespace:flux"
+  containerIncludeMetrics:  "name:biomage-node-chart"
 clusterAgent:
   enabled: true
   replicas: 2
