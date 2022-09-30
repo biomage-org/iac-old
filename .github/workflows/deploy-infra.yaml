@@ -541,13 +541,14 @@ jobs:
         run: |-
           LOGGING_POLICY_NAME="cluster-cloudwatch-log-policy"
 
-          # Apply FluentBit config in cluster
-          kubectl apply -f infra/fargate-logging/fargate-fluentbit-config.yaml
+          # Create FluentBit config for cluster depending on env
+          sed -i 's/CLUSTER_ENV/${CLUSTER_ENV}/g' > fargate-fluentbit-config-$CLUSTER_ENV.yaml
+          kubectl apply -f infra/fargate-logging/fargate-fluentbit-config-$CLUSTER_ENV.yaml
 
           # Setup permissions
           aws iam create-policy --policy-name $LOGGING_POLICY_NAME --policy-document infra/fargate-logging/fargate-logs-permissions.yaml
 
-          # Attach role for pipeline
+          # Attach role for pipeline and worker - both are using the same PodExecutionRole
           PIPELINE_POD_EXEC_ROLE=$(aws eks describe-fargate-profile \
             --cluster-name biomage-$CLUSTER_ENV \
             --fargate-profile-name pipeline-default | jq -r '.fargateProfile.podExecutionRoleArn' | awk -F"/" '{print (NF>1)? $NF : ""}' )
@@ -555,15 +556,6 @@ jobs:
           aws iam attach-role-policy \
           --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/$LOGGING_POLICY_NAME \
           --role-name $PIPELINE_POD_EXEC_ROLE
-
-          # Attach role for worker
-          WORKER_POD_EXEC_ROLE=$(aws eks describe-fargate-profile \
-            --cluster-name biomage-$CLUSTER_ENV \
-            --fargate-profile-name worker-default | jq -r '.fargateProfile.podExecutionRoleArn' | awk -F"/" '{print (NF>1)? $NF : ""}' )
-
-          aws iam attach-role-policy \
-          --policy-arn arn:aws:iam::$AWS_ACCOUNT_ID:policy/$LOGGING_POLICY_NAME \
-          --role-name $WORKER_POD_EXEC_ROLE
 
   report-if-failed:
     name: Report if workflow failed
