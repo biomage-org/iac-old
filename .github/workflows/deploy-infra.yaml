@@ -539,7 +539,7 @@ jobs:
         env:
           AWS_ACCOUNT_ID: ${{ steps.setup-aws.outputs.aws-account-id }}
         run: |-
-          LOGGING_POLICY_NAME="eks-fargate-logging-policy"
+          LOGGING_POLICY_NAME="cluster-cloudwatch-log-policy"
 
           # Apply FluentBit config in cluster
           kubectl apply -f infra/fargate-logging/fargate-fluentbit-config.yaml
