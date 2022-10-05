@@ -277,7 +277,7 @@ jobs:
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
         run: |-
-          yq '
+          yq -i '
             .myAccount.domainName = strenv(DOMAIN_NAME) |
             .myAccount.region = strenv(AWS_REGION) |
             .myAccount.accountId = strenv(AWS_ACCOUNT_ID) |
