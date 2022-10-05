@@ -263,17 +263,18 @@ jobs:
           FLUX_GIT_READ_ONLY="$(yq e '.fluxReadOnly' infra/environment-config/Biomage/infra-config.yaml)"
           PUBLIC_FACING="$(yq e '.publicFacing' infra/environment-config/Biomage/infra-config.yaml)"
 
-          if [[PUBLIC_FACING = "true"]]
+          if [["${PUBLIC_FACING}" = "true"]]
           then
             LB_SCHEME="internet-facing"
             echo "Iva says this will be internet-facing"
           fi
 
-          if [[PUBLIC_FACING = "false"]]
+          if [["${PUBLIC_FACING}" = "false"]]
           then
             LB_SCHEME="internal"
             echo "Iva says this will be internal"
           fi
+
           echo $LB_SCHEME
           echo $FLUX_GIT_READ_ONLY
           echo "::set-output name=LB_SCHEME::$LB_SCHEME"
@@ -291,20 +292,19 @@ jobs:
       #     CONFIG="${{ fromJson(steps.yaml-data.outputs.data) }}"
       #     echo $CONFIG
      
-  #     - id: fill-account-specific-metadata
-  #       name: Fill in account specific metadata in ConfigMap
-  #       run: |-
-  #         yq w -d0 infra/account-config.yaml myAccount.domainName --style=double "$DOMAIN_NAME" \
-  #         | yq w -d0 - myAccount.region --style=double "$AWS_REGION" \
-  #         | yq w -d0 - myAccount.accountId --style=double "$AWS_ACCOUNT_ID" \
-  #         | yq w -d0 - myAccount.acmCertificate --style=double "${{ secrets.ACM_CERTIFICATE_ARN }}" \
-  #         > infra/account-config.yaml
-
-  #         cat infra/account-config.yaml
-  #       env:
-  #         AWS_REGION: ${{ secrets.AWS_REGION }}
-  #         AWS_ACCOUNT_ID: ${{ steps.setup-aws.outputs.aws-account-id }}
-  #         DOMAIN_NAME: ${{ steps.setup-domain.outputs.domain-name }}
+      - id: fill-account-specific-metadata
+        name: Fill in account specific metadata in ConfigMap
+        run: |-
+          yq w -d0 infra/account-config.yaml myAccount.domainName --style=double "$DOMAIN_NAME" \
+          | yq w -d0 - myAccount.region --style=double "$AWS_REGION" \
+          | yq w -d0 - myAccount.accountId --style=double "$AWS_ACCOUNT_ID" \
+          | yq w -d0 - myAccount.acmCertificate --style=double "${{ secrets.ACM_CERTIFICATE_ARN }}" \
+          > infra/account-config.yaml
+          cat infra/account-config.yaml
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ steps.setup-aws.outputs.aws-account-id }}
+          DOMAIN_NAME: ${{ steps.setup-domain.outputs.domain-name }}
 
   #     - id: create-account-information-configmap
   #       name: Create a configmap containing AWS account specific details
