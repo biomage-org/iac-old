@@ -262,7 +262,7 @@ jobs:
         run: |-
           # CONFIG_FILE_NAME=infra/environment-config/$ENVIRONMENT_NAME/infra-config.yaml
 
-          CONFIG_FILE_NAME=infra/environment-config/${{matrix.environment-name}}/infra-config.yaml
+          CONFIG_FILE_NAME="infra/environment-config/${{matrix.environment-name}}/infra-config.yaml"
 
           echo $CONFIG_FILE_NAME
           echo "$(yq '.fluxReadOnly' $CONFIG_FILE_NAME)"
