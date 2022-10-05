@@ -273,19 +273,6 @@ jobs:
           echo $LB_SCHEME
           echo $FLUX_GIT_READ_ONLY
           echo "::set-output name=LB_SCHEME::$LB_SCHEME"
-
-      # - name: Run read-yaml action
-      #   id: yaml-data
-      #   uses: jbutcher5/read-yaml@main      # You may wish to replace main with a version tag such as '1.6' etc.
-      #   with:
-      #     file: 'infra/environment-config/Biomage/infra-config.yaml'          # File to read from
-      #     key-path: '[]'
-
-      # - name: Display read-yaml output
-      #   run: |-
-      #     echo "${{ steps.yaml-data.outputs.data }}"
-      #     CONFIG="${{ fromJson(steps.yaml-data.outputs.data) }}"
-      #     echo $CONFIG
      
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
@@ -301,11 +288,11 @@ jobs:
           DOMAIN_NAME: ${{ steps.setup-domain.outputs.domain-name }}
           ACM_CERTIFICATE_ARN: "${{ secrets.ACM_CERTIFICATE_ARN }}"
 
-  #     - id: create-account-information-configmap
-  #       name: Create a configmap containing AWS account specific details
-  #       continue-on-error: false
-  #       run: |-
-  #         kubectl create configmap account-config --from-file=infra/account-config.yaml -n flux -o yaml --dry-run | kubectl apply -f -
+      - id: create-account-information-configmap
+        name: Create a configmap containing AWS account specific details
+        continue-on-error: false
+        run: |-
+          kubectl create configmap account-config-2 --from-file=infra/account-config.yaml -n flux -o yaml --dry-run | kubectl apply -f -
 
   #     - id: install-fluxctl
   #       name: Install fluxctl
