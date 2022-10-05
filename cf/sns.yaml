@@ -33,7 +33,7 @@ Resources:
     Type: AWS::SNS::Topic
     Properties:
       KmsMasterKeyId: "alias/aws/sns"
-      TopicName: !Sub "x${Environment}-${SandboxID}-v2"
+      TopicName: !Sub "work-results-${Environment}-${SandboxID}-v2"
   PipelineResultsSubscriptionV2:
     Type: 'AWS::SNS::Subscription'
     Properties:
