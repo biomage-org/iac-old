@@ -261,7 +261,7 @@ jobs:
         id: lookupSdkVersion
         uses: mikefarah/yq@master
         with:
-          cmd: yq '.fluxReadOnly' 'infra/environment-config/\"$ENVIRONMENT_NAME\"/infra-config.yaml'
+          cmd: yq '.fluxReadOnly' 'infra/environment-config/$ENVIRONMENT_NAME/infra-config.yaml'
         env:
           ENVIRONMENT_NAME: ${{ matrix.environment-name }}
 
