@@ -290,7 +290,7 @@ jobs:
       - name: Display read-yaml output
         run: |-
           echo "${{ steps.yaml-data.outputs.data }}"
-          CONFIG="${{ fromJson(steps.yaml-data.outputs.data) }}"
+          CONFIG="${{ fromJson(steps.yaml-data.outputs.data.publicFacing) }}"
           echo $CONFIG
      
   #     - id: fill-account-specific-metadata
