@@ -252,46 +252,44 @@ jobs:
       #     echo "::set-output name=primary-domain-name::$PRIMARY_DOMAIN_NAME"
       #     echo "::set-output name=domain-name::$DOMAIN_NAME"
 
-      # - id: install-yq
-      #   name: Install yq for modifying the deployment spec.
-      #   run: |-
-      #     sudo wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
-
-      # - id: unpack-main-config
-      #   name: Read the configuration for this environment
-      #   run: |-
-
-
-          # FLUX_GIT_READ_ONLY="$(yq '.fluxGitReadOnly' < infra/environment-config/Biomage/infra-config.yaml)"
-          # PUBLIC_FACING="$(yq '.publicFacing' < infra/environment-config/Biomage/infra-config.yaml)"
-
-          # if [[PUBLIC_FACING = "true"]]
-          # then
-          #   LB_SCHEME="internet-facing"
-          #   echo "Iva says this will be internet-facing"
-          # fi
-
-          # if [[PUBLIC_FACING = "false"]]
-          # then
-          #   LB_SCHEME="internal"
-          #   echo "Iva says this will be internal"
-          # fi
-          # echo $LB_SCHEME
-          # echo $FLUX_GIT_READ_ONLY
-          # echo "::set-output name=LB_SCHEME::$LB_SCHEME"
-
-      - name: Run read-yaml action
-        id: yaml-data
-        uses: jbutcher5/read-yaml@main      # You may wish to replace main with a version tag such as '1.6' etc.
-        with:
-          file: 'infra/environment-config/Biomage/infra-config.yaml'          # File to read from
-          key-path: '[]'
-
-      - name: Display read-yaml output
+      - id: install-yq
+        name: Install yq for modifying the deployment spec.
         run: |-
-          echo "${{ steps.yaml-data.outputs.data }}"
-          CONFIG="${{ fromJson(steps.yaml-data.outputs.data.publicFacing) }}"
-          echo $CONFIG
+          sudo wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
+
+      - id: unpack-main-config
+        name: Read the configuration for this environment
+        run: |-
+          FLUX_GIT_READ_ONLY="$(yq e '.fluxReadOnly' infra/environment-config/Biomage/infra-config.yaml)"
+          PUBLIC_FACING="$(yq e '.publicFacing' infra/environment-config/Biomage/infra-config.yaml)"
+
+          if [[PUBLIC_FACING = "true"]]
+          then
+            LB_SCHEME="internet-facing"
+            echo "Iva says this will be internet-facing"
+          fi
+
+          if [[PUBLIC_FACING = "false"]]
+          then
+            LB_SCHEME="internal"
+            echo "Iva says this will be internal"
+          fi
+          echo $LB_SCHEME
+          echo $FLUX_GIT_READ_ONLY
+          echo "::set-output name=LB_SCHEME::$LB_SCHEME"
+
+      # - name: Run read-yaml action
+      #   id: yaml-data
+      #   uses: jbutcher5/read-yaml@main      # You may wish to replace main with a version tag such as '1.6' etc.
+      #   with:
+      #     file: 'infra/environment-config/Biomage/infra-config.yaml'          # File to read from
+      #     key-path: '[]'
+
+      # - name: Display read-yaml output
+      #   run: |-
+      #     echo "${{ steps.yaml-data.outputs.data }}"
+      #     CONFIG="${{ fromJson(steps.yaml-data.outputs.data) }}"
+      #     echo $CONFIG
      
   #     - id: fill-account-specific-metadata
   #       name: Fill in account specific metadata in ConfigMap
