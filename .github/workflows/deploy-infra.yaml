@@ -262,15 +262,15 @@ jobs:
         run: |-
           FLUX_GIT_READ_ONLY="$(yq e '.fluxReadOnly' infra/environment-config/Biomage/infra-config.yaml)"
           PUBLIC_FACING="$(yq e '.publicFacing' infra/environment-config/Biomage/infra-config.yaml)"
-
+          
           if [ "${PUBLIC_FACING}" = "true" ]; then
-            LB_SCHEME="internet-facing"
+            ALB_SCHEME="internet-facing"
           elif [ "${PUBLIC_FACING}" = "false" ]; then
-            LB_SCHEME="internal"
+            ALB_SCHEME="internal"
           fi
-          echo $LB_SCHEME
+          echo $ALB_SCHEME
           echo $FLUX_GIT_READ_ONLY
-          echo "::set-output name=alb-scheme::$LB_SCHEME"
+          echo "::set-output name=alb-scheme::$ALB_SCHEME"
      
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
