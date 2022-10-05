@@ -10,7 +10,7 @@ Parameters:
       - production
     Description: The environment for which the Load Balancer needs to be created.
   Scheme:
-    Type: string
+    Type: String
     Default: internet-facing
     Description: Whether the load balancer should have a public IP address or not.
 
