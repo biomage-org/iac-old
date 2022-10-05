@@ -263,18 +263,13 @@ jobs:
           FLUX_GIT_READ_ONLY="$(yq e '.fluxReadOnly' infra/environment-config/Biomage/infra-config.yaml)"
           PUBLIC_FACING="$(yq e '.publicFacing' infra/environment-config/Biomage/infra-config.yaml)"
 
-          if [["${PUBLIC_FACING}" = "true"]]
-          then
+          if [ "${PUBLIC_FACING}" = "true" ]; then
             LB_SCHEME="internet-facing"
             echo "Iva says this will be internet-facing"
-          fi
-
-          if [["${PUBLIC_FACING}" = "false"]]
-          then
+          elif [ "${PUBLIC_FACING}" = "false" ]; then
             LB_SCHEME="internal"
             echo "Iva says this will be internal"
           fi
-
           echo $LB_SCHEME
           echo $FLUX_GIT_READ_ONLY
           echo "::set-output name=LB_SCHEME::$LB_SCHEME"
@@ -295,10 +290,10 @@ jobs:
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
         run: |-
-          yq w -d0 infra/account-config.yaml myAccount.domainName --style=double "$DOMAIN_NAME" \
-          | yq w -d0 - myAccount.region --style=double "$AWS_REGION" \
-          | yq w -d0 - myAccount.accountId --style=double "$AWS_ACCOUNT_ID" \
-          | yq w -d0 - myAccount.acmCertificate --style=double "${{ secrets.ACM_CERTIFICATE_ARN }}" \
+          yq w infra/account-config.yaml myAccount.domainName --style=double "$DOMAIN_NAME" \
+          | yq w myAccount.region --style=double "$AWS_REGION" \
+          | yq w myAccount.accountId --style=double "$AWS_ACCOUNT_ID" \
+          | yq w myAccount.acmCertificate --style=double "${{ secrets.ACM_CERTIFICATE_ARN }}" \
           > infra/account-config.yaml
           cat infra/account-config.yaml
         env:
