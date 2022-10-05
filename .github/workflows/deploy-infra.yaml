@@ -260,8 +260,10 @@ jobs:
       - id: unpack-main-config
         name: Read the configuration for this environment
         run: |-
-          CONFIG_FILE_NAME=infra/environment-config/${{ matrix.environment-name }}/infra-config.yaml
+          CONFIG_FILE_NAME=infra/environment-config/$ENVIRONMENT_NAME/infra-config.yaml
 
+          echo $CONFIG_FILE_NAME
+          
           FLUX_GIT_READ_ONLY="$(yq '.fluxReadOnly' $CONFIG_FILE_NAME)"
           PUBLIC_FACING="$(yq '.publicFacing' $CONFIG_FILE_NAME)"
 
@@ -275,6 +277,8 @@ jobs:
           echo $ALB_SCHEME
           echo $FLUX_GIT_READ_ONLY
           echo "::set-output name=alb-scheme::$ALB_SCHEME"
+        env:
+          ENVIRONMENT_NAME: ${{ matrix.environment-name }}
      
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
