@@ -260,9 +260,12 @@ jobs:
       - id: unpack-main-config
         name: Read the configuration for this environment
         run: |-
-          FLUX_GIT_READ_ONLY="$(yq e '.fluxReadOnly' infra/environment-config/Biomage/infra-config.yaml)"
-          PUBLIC_FACING="$(yq e '.publicFacing' infra/environment-config/Biomage/infra-config.yaml)"
+          CONFIG_FILE_NAME= infra/environment-config/${{ matrix.environment-type }}/infra-config.yaml
+          echo $CONFIG_FILE_NAME
           
+          FLUX_GIT_READ_ONLY="$(yq '.fluxReadOnly' $CONFIG_FILE_NAME)"
+          PUBLIC_FACING="$(yq '.publicFacing' $CONFIG_FILE_NAME)"
+
           if [ "${PUBLIC_FACING}" = "true" ]; then
             ALB_SCHEME="internet-facing"
           elif [ "${PUBLIC_FACING}" = "false" ]; then
