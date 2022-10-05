@@ -252,10 +252,10 @@ jobs:
           echo "::set-output name=primary-domain-name::$PRIMARY_DOMAIN_NAME"
           echo "::set-output name=domain-name::$DOMAIN_NAME"
 
-      - id: install-yq
-        name: Install yq for modifying the deployment spec.
-        run: |-
-          sudo wget https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
+      # - id: install-yq
+      #   name: Install yq for modifying the deployment spec.
+      #   run: |-
+      #     sudo wget https://github.com/mikefarah/yq/releases/download/v4.27.5/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
 
       - name: Get Flux mode
         id: lookupSdkVersion
