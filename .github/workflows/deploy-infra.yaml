@@ -290,8 +290,8 @@ jobs:
       - name: Display read-yaml output
         run: |-
           echo "${{ steps.yaml-data.outputs.data }}"
-          CONFIG="${{ steps.yaml-data.outputs.data }}"
-          echo '${{ fromJson(CONFIG).fluxGitReadOnly }}'
+          CONFIG="${{ fromJson(steps.yaml-data.outputs.data) }}"
+          echo '$CONFIG'
      
   #     - id: fill-account-specific-metadata
   #       name: Fill in account specific metadata in ConfigMap
