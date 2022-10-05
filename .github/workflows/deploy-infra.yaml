@@ -259,22 +259,24 @@ jobs:
 
       - id: unpack-main-config
         name: Read the configuration for this environment
-        # FLUX_GIT_READ_ONLY="$(yq '.fluxGitReadOnly' < infra/environment-config/Biomage/infra-config.yaml)"
-        PUBLIC_FACING="$(yq '.publicFacing' < infra/environment-config/Biomage/infra-config.yaml)"
+        run: |-
+          FLUX_GIT_READ_ONLY="$(yq '.fluxGitReadOnly' < infra/environment-config/Biomage/infra-config.yaml)"
+          PUBLIC_FACING="$(yq '.publicFacing' < infra/environment-config/Biomage/infra-config.yaml)"
 
-        if [[PUBLIC_FACING = "true"]]
-        then
-          LB_SCHEME="internet-facing"
-          echo "Iva says this will be internet-facing"
-        fi
+          if [[PUBLIC_FACING = "true"]]
+          then
+            LB_SCHEME="internet-facing"
+            echo "Iva says this will be internet-facing"
+          fi
 
-        if [[PUBLIC_FACING = "false"]]
-        then
-          LB_SCHEME="internal"
-          echo "Iva says this will be internal"
-        fi
-        echo $LB_SCHEME
-        echo "::set-output name=LB_SCHEME::$LB_SCHEME"
+          if [[PUBLIC_FACING = "false"]]
+          then
+            LB_SCHEME="internal"
+            echo "Iva says this will be internal"
+          fi
+          echo $LB_SCHEME
+          echo $FLUX_GIT_READ_ONLY
+          echo "::set-output name=LB_SCHEME::$LB_SCHEME"
      
   #     - id: fill-account-specific-metadata
   #       name: Fill in account specific metadata in ConfigMap
