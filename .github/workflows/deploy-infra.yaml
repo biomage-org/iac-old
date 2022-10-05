@@ -222,40 +222,40 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - id: add-kubeconfig
-        name: Add k8s config file for existing cluster.
-        run: |-
-          aws eks update-kubeconfig --name biomage-$CLUSTER_ENV
+      # - id: add-kubeconfig
+      #   name: Add k8s config file for existing cluster.
+      #   run: |-
+      #     aws eks update-kubeconfig --name biomage-$CLUSTER_ENV
 
-      - id: deploy-metrics-server
-        name: Deploy k8s metrics server
-        run: |-
-          kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+      # - id: deploy-metrics-server
+      #   name: Deploy k8s metrics server
+      #   run: |-
+      #     kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
-      - id: create-flux-namespace
-        name: Attempt to create flux namespace
-        continue-on-error: true
-        run: |-
-          kubectl create namespace flux
+      # - id: create-flux-namespace
+      #   name: Attempt to create flux namespace
+      #   continue-on-error: true
+      #   run: |-
+      #     kubectl create namespace flux
 
-      - id: setup-domain
-        name: Compile environment-specific domain name
-        run: |-
-          if [ "${{ matrix.environment-type }}" = "production" ]; then
-            PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
-            DOMAIN_NAME="${{ secrets.DOMAIN_NAME }}"
-          fi
-          if [ "${{ matrix.environment-type }}" = "staging" ]; then
-            PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
-            DOMAIN_NAME="${{ secrets.DOMAIN_NAME_STAGING }}"
-          fi
-          echo "::set-output name=primary-domain-name::$PRIMARY_DOMAIN_NAME"
-          echo "::set-output name=domain-name::$DOMAIN_NAME"
+      # - id: setup-domain
+      #   name: Compile environment-specific domain name
+      #   run: |-
+      #     if [ "${{ matrix.environment-type }}" = "production" ]; then
+      #       PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
+      #       DOMAIN_NAME="${{ secrets.DOMAIN_NAME }}"
+      #     fi
+      #     if [ "${{ matrix.environment-type }}" = "staging" ]; then
+      #       PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
+      #       DOMAIN_NAME="${{ secrets.DOMAIN_NAME_STAGING }}"
+      #     fi
+      #     echo "::set-output name=primary-domain-name::$PRIMARY_DOMAIN_NAME"
+      #     echo "::set-output name=domain-name::$DOMAIN_NAME"
 
-      - id: install-yq
-        name: Install yq for modifying the deployment spec.
-        run: |-
-          sudo wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
+      # - id: install-yq
+      #   name: Install yq for modifying the deployment spec.
+      #   run: |-
+      #     sudo wget https://github.com/mikefarah/yq/releases/download/3.4.1/yq_linux_amd64 -O /usr/local/bin/yq && sudo chmod +x /usr/local/bin/yq
 
       # - id: unpack-main-config
       #   name: Read the configuration for this environment
@@ -291,7 +291,7 @@ jobs:
         run: |-
           echo "${{ steps.yaml-data.outputs.data }}"
           CONFIG="${{ fromJson(steps.yaml-data.outputs.data) }}"
-          echo '$CONFIG'
+          echo $CONFIG
      
   #     - id: fill-account-specific-metadata
   #       name: Fill in account specific metadata in ConfigMap
