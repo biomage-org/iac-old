@@ -222,21 +222,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # - id: add-kubeconfig
-      #   name: Add k8s config file for existing cluster.
-      #   run: |-
-      #     aws eks update-kubeconfig --name biomage-$CLUSTER_ENV
+      - id: add-kubeconfig
+        name: Add k8s config file for existing cluster.
+        run: |-
+          aws eks update-kubeconfig --name biomage-$CLUSTER_ENV
 
       # - id: deploy-metrics-server
       #   name: Deploy k8s metrics server
       #   run: |-
       #     kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
-      # - id: create-flux-namespace
-      #   name: Attempt to create flux namespace
-      #   continue-on-error: true
-      #   run: |-
-      #     kubectl create namespace flux
+      - id: create-flux-namespace
+        name: Attempt to create flux namespace
+        continue-on-error: true
+        run: |-
+          kubectl create namespace flux
 
       # - id: setup-domain
       #   name: Compile environment-specific domain name
@@ -359,14 +359,14 @@ jobs:
   #             --set acmCertificate=${{ secrets.ACM_CERTIFICATE_ARN }} \
   #             --install --wait
 
-  #     - id: deploy-env-loadbalancer
-  #       name: Deploy AWS Application Load Balancer for environment
-  #       uses: aws-actions/aws-cloudformation-github-deploy@v1
-  #       with:
-  #         parameter-overrides: "Environment=${{ matrix.environment-type }},Scheme=${{steps.unpack-main-config.outputs.LB_SCHEME}}"
-  #         name: "biomage-k8s-alb-${{ matrix.environment-type }}"
-  #         template: 'infra/cf-loadbalancer.yaml'
-  #         no-fail-on-empty-changeset: "1"
+      - id: deploy-env-loadbalancer
+        name: Deploy AWS Application Load Balancer for environment
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          parameter-overrides: "Environment=${{ matrix.environment-type }},Scheme=${{steps.unpack-main-config.outputs.LB_SCHEME}}"
+          name: "biomage-k8s-alb-${{ matrix.environment-type }}"
+          template: 'infra/cf-loadbalancer.yaml'
+          no-fail-on-empty-changeset: "1"
 
   #     - id: deploy-route53
   #       name: Deploy Route 53 DNS records to ELB
