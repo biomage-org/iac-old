@@ -9,6 +9,10 @@ Parameters:
       - staging
       - production
     Description: The environment for which the Load Balancer needs to be created.
+  Scheme:
+    Type: string
+    Default: internet-facing
+    Description: Whether the load balancer should have a public IP address or not.
 
 Resources: 
   LoadBalancer:
@@ -19,11 +23,11 @@ Resources:
         - Key: routing.http2.enabled
           Value: "true"
       Name: !Sub "k8s-${Environment}"
-      Scheme: internal
+      Scheme: !Ref Scheme
       Subnets: 
         Fn::Split:
           - ','
-          - Fn::ImportValue: !Sub "eksctl-biomage-${Environment}-cluster::SubnetsPrivate"
+          - Fn::ImportValue: !Sub "eksctl-biomage-${Environment}-cluster::SubnetsPublic"
       Tags: 
         - Key: ingress.k8s.aws/resource
           Value: LoadBalancer
