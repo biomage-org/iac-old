@@ -263,7 +263,8 @@ jobs:
           CONFIG_FILE_NAME=infra/environment-config/$ENVIRONMENT_NAME/infra-config.yaml
 
           echo $CONFIG_FILE_NAME
-          
+          echo "$(yq '.fluxReadOnly' $CONFIG_FILE_NAME)"
+
           FLUX_GIT_READ_ONLY="$(yq '.fluxReadOnly' $CONFIG_FILE_NAME)"
           PUBLIC_FACING="$(yq '.publicFacing' $CONFIG_FILE_NAME)"
 
