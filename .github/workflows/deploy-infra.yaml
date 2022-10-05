@@ -260,11 +260,12 @@ jobs:
       - id: unpack-main-config
         name: Read the configuration for this environment
         run: |-
-          CONFIG_FILE_NAME= "infra/environment-config/${{ matrix.environment-name }}/infra-config.yaml"
-          echo $CONFIG_FILE_NAME
+          CONFIG_FILE_NAME="infra/environment-config/${{ matrix.environment-name }}/infra-config.yaml"
 
           FLUX_GIT_READ_ONLY="$(yq '.fluxReadOnly' $CONFIG_FILE_NAME)"
           PUBLIC_FACING="$(yq '.publicFacing' $CONFIG_FILE_NAME)"
+
+          echo $FLUX_GIT_READ_ONLY
 
           if [ "${PUBLIC_FACING}" = "true" ]; then
             ALB_SCHEME="internet-facing"
