@@ -270,7 +270,7 @@ jobs:
           fi
           echo $LB_SCHEME
           echo $FLUX_GIT_READ_ONLY
-          echo "::set-output name=LB_SCHEME::$LB_SCHEME"
+          echo "::set-output name=alb-scheme::$LB_SCHEME"
      
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
@@ -361,17 +361,11 @@ jobs:
   #             --set acmCertificate=${{ secrets.ACM_CERTIFICATE_ARN }} \
   #             --install --wait
 
-      - id: test-outputs
-        name: Test step to test outputs
-        run: |-
-          LB_SCHEME=${{steps.unpack-main-config.outputs.LB_SCHEME}}
-          echo $LB_SCHEME
-
       - id: deploy-env-loadbalancer
         name: Deploy AWS Application Load Balancer for environment
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          parameter-overrides: "Environment=${{ matrix.environment-type }},Scheme=${{ steps.unpack-main-config.outputs.LB_SCHEME }}"
+          parameter-overrides: "Environment=${{ matrix.environment-type }},Scheme=${{ steps.unpack-main-config.outputs.alb-scheme }}"
           name: "biomage-k8s-alb-${{ matrix.environment-type }}"
           template: 'infra/cf-loadbalancer.yaml'
           no-fail-on-empty-changeset: "1"
