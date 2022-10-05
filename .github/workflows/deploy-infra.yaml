@@ -238,19 +238,19 @@ jobs:
         run: |-
           kubectl create namespace flux
 
-      # - id: setup-domain
-      #   name: Compile environment-specific domain name
-      #   run: |-
-      #     if [ "${{ matrix.environment-type }}" = "production" ]; then
-      #       PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
-      #       DOMAIN_NAME="${{ secrets.DOMAIN_NAME }}"
-      #     fi
-      #     if [ "${{ matrix.environment-type }}" = "staging" ]; then
-      #       PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
-      #       DOMAIN_NAME="${{ secrets.DOMAIN_NAME_STAGING }}"
-      #     fi
-      #     echo "::set-output name=primary-domain-name::$PRIMARY_DOMAIN_NAME"
-      #     echo "::set-output name=domain-name::$DOMAIN_NAME"
+      - id: setup-domain
+        name: Compile environment-specific domain name
+        run: |-
+          if [ "${{ matrix.environment-type }}" = "production" ]; then
+            PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
+            DOMAIN_NAME="${{ secrets.DOMAIN_NAME }}"
+          fi
+          if [ "${{ matrix.environment-type }}" = "staging" ]; then
+            PRIMARY_DOMAIN_NAME="${{ secrets.PRIMARY_DOMAIN_NAME }}"
+            DOMAIN_NAME="${{ secrets.DOMAIN_NAME_STAGING }}"
+          fi
+          echo "::set-output name=primary-domain-name::$PRIMARY_DOMAIN_NAME"
+          echo "::set-output name=domain-name::$DOMAIN_NAME"
 
       - id: install-yq
         name: Install yq for modifying the deployment spec.
@@ -265,10 +265,8 @@ jobs:
 
           if [ "${PUBLIC_FACING}" = "true" ]; then
             LB_SCHEME="internet-facing"
-            echo "Iva says this will be internet-facing"
           elif [ "${PUBLIC_FACING}" = "false" ]; then
             LB_SCHEME="internal"
-            echo "Iva says this will be internal"
           fi
           echo $LB_SCHEME
           echo $FLUX_GIT_READ_ONLY
@@ -291,6 +289,7 @@ jobs:
           ACM_CERTIFICATE_ARN: ${{ secrets.ACM_CERTIFICATE_ARN }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
 
+      # TODO remove -2 from configmap name after validating it works
       - id: create-account-information-configmap
         name: Create a configmap containing AWS account specific details
         continue-on-error: false
@@ -362,11 +361,17 @@ jobs:
   #             --set acmCertificate=${{ secrets.ACM_CERTIFICATE_ARN }} \
   #             --install --wait
 
+      - id: test-outputs
+        name: Test step to test outputs
+        run: |-
+          LB_SCHEME=${{steps.unpack-main-config.outputs.LB_SCHEME}}
+          echo $LB_SCHEME
+
       - id: deploy-env-loadbalancer
         name: Deploy AWS Application Load Balancer for environment
         uses: aws-actions/aws-cloudformation-github-deploy@v1
         with:
-          parameter-overrides: "Environment=${{ matrix.environment-type }},Scheme=${{steps.unpack-main-config.outputs.LB_SCHEME}}"
+          parameter-overrides: "Environment=${{ matrix.environment-type }},Scheme=${{ steps.unpack-main-config.outputs.LB_SCHEME }}"
           name: "biomage-k8s-alb-${{ matrix.environment-type }}"
           template: 'infra/cf-loadbalancer.yaml'
           no-fail-on-empty-changeset: "1"
