@@ -264,7 +264,7 @@ jobs:
         cmd: yq '.fluxReadOnly' 'infra/environment-config/${{matrix.environment-name}}/infra-config.yaml'
 
     - name: Test
-      id: Test
+      id: test-this
       run: |-
         FLUX_MODE=${{ steps.lookupSdkVersion.outputs.result }}
         echo $FLUX_MODE
