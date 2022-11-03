@@ -172,3 +172,4 @@ Resources:
     Properties:
       UserPoolId: !Ref UserPool
       Domain: !Sub "biomage-auth-${Environment}-${AWS::AccountId}"
+      
