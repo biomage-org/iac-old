@@ -26,7 +26,7 @@ Resources:
       LoadBalancerAttributes: 
         - Key: routing.http2.enabled
           Value: "true"
-      Name: !Sub "k8s-${Environment}-test"
+      Name: !Sub "k8s-${Environment}"
       Scheme: !If [isPublic, "internet-facing", "internal"]
       Subnets: 
         Fn::Split:
