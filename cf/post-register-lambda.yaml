@@ -151,3 +151,4 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/post-invite-registration-lambda-${Environment}"
       RetentionInDays: 14
+      
