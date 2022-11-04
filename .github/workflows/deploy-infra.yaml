@@ -75,8 +75,8 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment-type: ${{ fromJson(needs.set-environments.outputs.env_type) }}
-        environment-name: ["Biomage"]
+        environment-type: ["staging"]
+        environment-name: ${{ fromJson(needs.set-environments.outputs.env_name) }}
         exclude:
           - environment-name: trv
             environment-type: staging
