@@ -52,7 +52,6 @@ jobs:
       - id: set-environment-name
         name: Set up environment name
         run: |-
-          echo "IVA=washere" >> $GITHUB_OUTPUT
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
             echo "Hello all"
             echo 'environment-name=["Biomage", "trv"]' >> $GITHUB_OUTPUT
@@ -62,75 +61,67 @@ jobs:
           fi
           echo ${GITHUB_OUTPUT}
         env:
-          ENVIRONMENT_NAME: ${{ github.environment_name }}
+          ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
 
   check-environment-secrets:
     name: Check secrets
     runs-on: ubuntu-20.04
     needs: [set-environments]
+    strategy:
+      matrix:
+        environment-name: ${{ fromJson(needs.set-environments.outputs.environment-name) }}
+    environment: ${{ matrix.environment-name }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - id: bla
-        name: blablabala
+      - id: check-secrets
+        name: Check if necessary secrets are installed.
         run: |-
-          echo ${TEST}
-        env:
-          TEST: ${{ steps.set-environments.outputs.matrix }}
+          echo Checking if secrets are defined in the repository.
 
-    # strategy:
-    #   matrix:
-    #     environment-name: ${{ fromJson(needs.set-environments.outputs.environment-name) }}
-    # environment: ${{ matrix.environment-name }}
-    # outputs:
-    #   matrix: ${{ steps.set-matrix.outputs.matrix }}
-    # steps:
-    #   - id: check-secrets
-    #     name: Check if necessary secrets are installed.
-    #     run: |-
-    #       echo Checking if secrets are defined in the repository.
+          if [ -z "${{ secrets.ACM_CERTIFICATE_ARN}}" ]
+          then
+            echo AWS certificate ARN is not defined.
+            ERROR=true
+          fi
 
-    #       if [ -z "${{ secrets.ACM_CERTIFICATE_ARN}}" ]
-    #       then
-    #         echo AWS certificate ARN is not defined.
-    #         ERROR=true
-    #       fi
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]
+          then
+            echo AWS Access Key ID not defined.
+            ERROR=true
+          fi
 
-    #       if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]
-    #       then
-    #         echo AWS Access Key ID not defined.
-    #         ERROR=true
-    #       fi
+          if [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]
+          then
+            echo AWS Secret Access Key not defined.
+            ERROR=true
+          fi
 
-    #       if [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]
-    #       then
-    #         echo AWS Secret Access Key not defined.
-    #         ERROR=true
-    #       fi
+          if [ -z "${{ secrets.API_TOKEN_GITHUB }}" ]
+          then
+            echo GitHub deploy key access token not defined.
+            ERROR=true
+          fi
 
-    #       if [ -z "${{ secrets.API_TOKEN_GITHUB }}" ]
-    #       then
-    #         echo GitHub deploy key access token not defined.
-    #         ERROR=true
-    #       fi
+          if [ -z "${{ secrets.PRIMARY_DOMAIN_NAME }}" ]
+          then
+            echo Secret PRIMARY_DOMAIN_NAME is not set in repository secrets. Make sure this secret exists in the repository secrets.
+            ERROR=true
+          fi
 
-    #       if [ -z "${{ secrets.PRIMARY_DOMAIN_NAME }}" ]
-    #       then
-    #         echo Secret PRIMARY_DOMAIN_NAME is not set in repository secrets. Make sure this secret exists in the repository secrets.
-    #         ERROR=true
-    #       fi
+          if [ -z "${{ secrets.DOMAIN_NAME }}" ]
+          then
+            echo Secret DOMAIN_NAME is not set in repository secrets. Make sure this secret exists in the repository secrets.
+            ERROR=true
+          fi
 
-    #       if [ -z "${{ secrets.DOMAIN_NAME }}" ]
-    #       then
-    #         echo Secret DOMAIN_NAME is not set in repository secrets. Make sure this secret exists in the repository secrets.
-    #         ERROR=true
-    #       fi
-
-    #       if [ ! -z "$ERROR" ]
-    #       then
-    #         echo
-    #         echo This workflow requires some secrets to complete.
-    #         echo Please make they are created by adding/rotating them manually.
-    #         exit 1
-    #       fi
+          if [ ! -z "$ERROR" ]
+          then
+            echo
+            echo This workflow requires some secrets to complete.
+            echo Please make they are created by adding/rotating them manually.
+            exit 1
+          fi
 
   create-eks-cluster:
     name: Create EKS cluster
