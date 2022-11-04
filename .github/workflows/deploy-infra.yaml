@@ -17,9 +17,9 @@ on:
         - deploy and configure
         - configure
         default: configure
-      cluster:
+      environment_type:
         type: choice
-        description: Select cluster
+        description: Select environment type
         options:
         - staging
         - production
@@ -41,17 +41,17 @@ jobs:
       env_name: ${{ steps.set-env-name.outputs.env_name }}
     steps:
       - id: set-env-type
-        name: Set up cluster matrix
+        name: Set up environment type
         run: |-
-          if [ "${CLUSTER}" = "staging" ]; then
+          if [ "${ENVIRONMENT_TYPE}" = "staging" ]; then
             echo 'env_type=["staging"]' >> $GITHUB_OUTPUT
-          elif [ "${CLUSTER}" = "production" ]; then
+          elif [ "${ENVIRONMENT_TYPE}" = "production" ]; then
             echo 'env_type=["production"]' >> $GITHUB_OUTPUT
-          elif [ "${CLUSTER}" = "staging and production" ]; then
+          elif [ "${ENVIRONMENT_TYPE}" = "staging and production" ]; then
             echo 'env_type=["staging", "production"]' >> $GITHUB_OUTPUT
           fi
         env:
-          CLUSTER: ${{ github.event.inputs.cluster }}
+          ENVIRONMENT_TYPE: ${{ github.event.inputs.environment_type }}
       - id: set-env-name
         name: Set up environment name
         run: |-
