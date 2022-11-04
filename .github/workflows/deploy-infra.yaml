@@ -52,6 +52,9 @@ jobs:
       - id: set-environment-name
         name: Set up environment name
         run: |-
+          echo "*********"
+          echo ${ENVIRONMENT_NAME}
+          echo "*********"
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
             echo '::set-output name=environment_name::["Biomage", "trv"]'
           elif [ "${ENVIRONMENT_NAME}" = "trv" ]; then
