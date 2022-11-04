@@ -208,6 +208,8 @@ jobs:
         exclude:
           - environment-name: trv
             environment-type: staging
+          - environment-name: Biomage
+            environment-type: production
     environment: ${{ matrix.environment-name }}
     steps:
       - id: checkout
