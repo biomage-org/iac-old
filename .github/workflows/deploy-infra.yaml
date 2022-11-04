@@ -60,7 +60,7 @@ jobs:
         env:
           ENVIRONMENT_NAME: ${{ github.environment_name }}
 
-  check-secrets:
+  check-environment-secrets:
     name: Check secrets
     runs-on: ubuntu-20.04
     strategy:
@@ -122,7 +122,7 @@ jobs:
   create-eks-cluster:
     name: Create EKS cluster
     runs-on: ubuntu-20.04
-    needs: setup
+    needs: [set-environments, check-environment-secrets]
     env:
       CLUSTER_ENV: ${{ matrix.environment-type }}
     strategy:
