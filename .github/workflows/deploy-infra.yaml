@@ -55,7 +55,7 @@ jobs:
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
             echo '::set-output name=environment-name::["Biomage", "trv"]'
           elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
-            echo '::set-output name=environment-name::["${ENVIRONMENT_NAME}"]'
+            echo '::set-output name=environment-name::["trv"]'
           fi
         env:
           ENVIRONMENT_NAME: ${{ github.environment_name }}
