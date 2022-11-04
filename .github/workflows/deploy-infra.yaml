@@ -368,6 +368,15 @@ jobs:
         env:
           ENVIRONMENT_NAME: ${{ matrix.environment-name }}
 
+      - id: print-public-facing
+        name: Print value of public facing
+        run: |-
+          echo "print public facing:"
+          echo ${PUBLIC_FACING}
+          echo "end of printing *****"
+        env:
+          PUBLIC_FACING: ${{ steps.platform-public-facing.outputs.result }}
+
       - id: deploy-env-loadbalancer
         name: Deploy AWS Application Load Balancer for environment
         uses: aws-actions/aws-cloudformation-github-deploy@v1
