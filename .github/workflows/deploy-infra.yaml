@@ -53,8 +53,10 @@ jobs:
         name: Set up environment name
         run: |-
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
+            echo "Hello all"
             echo "environment-name=["Biomage", "trv"]" >> $GITHUB_OUTPUT
           elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
+            echo "Hello NOT all"
             echo "environment-name=["trv"]" >> $GITHUB_OUTPUT
           fi
         env:
