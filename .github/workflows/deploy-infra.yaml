@@ -44,27 +44,14 @@ jobs:
         name: Set up cluster matrix
         run: |-
           if [ "${CLUSTER}" = "staging" ]; then
-            echo '::set-output name=matrix::["staging"]'
+            echo 'matrix=["staging"]' >> $GITHUB_OUTPUT
           elif [ "${CLUSTER}" = "production" ]; then
-            echo '::set-output name=matrix::["production"]'
+            echo 'matrix=["production"]' >> $GITHUB_OUTPUT
           elif [ "${CLUSTER}" = "staging and production" ]; then
-            echo '::set-output name=matrix::["staging", "production"]'
+            echo 'matrix=["staging", "production"]' >> $GITHUB_OUTPUT
           fi
         env:
           CLUSTER: ${{ github.event.inputs.cluster }}
-      # - id: set-environment-name
-      #   name: Set up environment name
-      #   run: |-
-      #     echo "*********"
-      #     echo ${ENVIRONMENT_NAME}
-      #     echo "*********"
-      #     if [ "${ENVIRONMENT_NAME}" = "all" ]; then
-      #       echo '::set-output name=environment_name::["Biomage", "trv"]'
-      #     elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
-      #       echo '::set-output name=environment_name::[${ENVIRONMENT_NAME}]'
-      #     fi
-      #   env:
-      #     ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
       - id: set-environment-name
         name: Set up environment name
         run: |-
