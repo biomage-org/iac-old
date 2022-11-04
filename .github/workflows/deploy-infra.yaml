@@ -162,35 +162,35 @@ jobs:
   #         eksctl create iamserviceaccount --config-file=/tmp/cluster-$CLUSTER_ENV.yaml
   #         eksctl delete iamserviceaccount --config-file=/tmp/cluster-$CLUSTER_ENV.yaml --only-missing --approve
 
-  # configure-cluster:
-  #   name: Configure Kubernetes resources on the EKS cluster
-  #   runs-on: ubuntu-20.04
-  #   needs: [setup, create-eks-cluster]
-  #   if: always() && (needs.create-eks-cluster.result == 'success' || needs.create-eks-cluster.result == 'skipped')
-  #   env:
-  #     CLUSTER_ENV: ${{ matrix.environment-type }}
-  #     API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
-  #   strategy:
-  #     max-parallel: 1
-  #     matrix:
-  #       environment-type: ${{ fromJson(needs.setup.outputs.matrix) }}
-  #       environment-name: [Biomage, trv]
-  #       exclude:
-  #         - environment-name: trv
-  #           environment-type: staging
-  #   environment: ${{ matrix.environment-name }}
-  #   steps:
-  #     - id: checkout
-  #       name: Check out source code
-  #       uses: actions/checkout@v2
+  configure-cluster:
+    name: Configure Kubernetes resources on the EKS cluster
+    runs-on: ubuntu-20.04
+    needs: [set-environments, create-eks-cluster]
+    if: always() && (needs.create-eks-cluster.result == 'success' || needs.create-eks-cluster.result == 'skipped')
+    env:
+      CLUSTER_ENV: ${{ matrix.environment-type }}
+      API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+    strategy:
+      max-parallel: 1
+      matrix:
+        environment-type: ${{ fromJson(needs.setup.outputs.matrix) }}
+        environment-name: ${{ fromJson(needs.set-environments.outputs.environment_name) }}
+        exclude:
+          - environment-name: trv
+            environment-type: staging
+    environment: ${{ matrix.environment-name }}
+    steps:
+      - id: checkout
+        name: Check out source code
+        uses: actions/checkout@v2
 
-  #     - id: setup-aws
-  #       name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ secrets.AWS_REGION }}
+      - id: setup-aws
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
   #     - id: add-kubeconfig
   #       name: Add k8s config file for existing cluster.
