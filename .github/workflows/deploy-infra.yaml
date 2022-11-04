@@ -67,9 +67,12 @@ jobs:
     name: Check secrets
     runs-on: ubuntu-20.04
     needs: [set-environments]
-    run: |-
-      export TEST=$ {{ needs.set-environments.outputs.environment-name }}
-      echo ${TEST}
+    steps:
+      - id: bla
+        name: blablabala
+        run: |-
+          export TEST=$ {{ needs.set-environments.outputs.environment-name }}
+          echo ${TEST}
 
     # strategy:
     #   matrix:
