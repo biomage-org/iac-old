@@ -55,28 +55,15 @@ jobs:
       - id: set-environment-name
         name: Set up environment name
         run: |-
-          echo "*********"
-          echo ${ENVIRONMENT_NAME}
-          echo "*********"
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
-            echo '::set-output name=environment_name::["Biomage", "trv"]'
-          elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
-            echo '::set-output name=environment_name::[${ENVIRONMENT_NAME}]'
+            echo 'environment-name=["Biomage", "trv"]' >> $GITHUB_OUTPUT
+          elif [ "${ENVIRONMENT_NAME}" = "trv" ]; then
+            echo 'environment-name=["trv"]' >> $GITHUB_OUTPUT
+          elif [ "${ENVIRONMENT_NAME}" = "Biomage" ]; then
+            echo 'environment-name=["Biomage"]' >> $GITHUB_OUTPUT
           fi
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
-      # - id: set-environment-name
-      #   name: Set up environment name
-      #   run: |-
-      #     if [ "${ENVIRONMENT_NAME}" = "all" ]; then
-      #       echo "Hello all"
-      #       echo 'environment-name=["Biomage", "trv"]' >> $GITHUB_OUTPUT
-      #     elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
-      #       echo "Hello NOT all"
-      #       echo 'environment-name=["trv"]' >> $GITHUB_OUTPUT
-      #     fi
-      #   env:
-      #     ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
 
 
   create-eks-cluster:
