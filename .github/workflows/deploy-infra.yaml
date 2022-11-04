@@ -66,7 +66,7 @@ jobs:
     needs: [set-environments]
     strategy:
       matrix:
-        environment-name: ${{ fromJson(needs.setup.outputs.environment-name) }}
+        environment-name: ${{ fromJson(needs.set-environments.outputs.environment-name) }}
     environment: ${{ matrix.environment-name }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
