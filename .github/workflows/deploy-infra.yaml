@@ -33,12 +33,39 @@ env:
 concurrency: cluster-update-mutex
 
 jobs:
-  setup:
-    name: Check secrets and set up matrix
+  set-environments:
+    name: Set up environment name and environment type for action run
+    runs-on: ubuntu-20.04
+    steps:
+      - id: set-matrix
+        name: Set up cluster matrix
+        run: |-
+          if [ "${CLUSTER}" = "staging" ]; then
+            echo '::set-output name=matrix::["staging"]'
+          elif [ "${CLUSTER}" = "production" ]; then
+            echo '::set-output name=matrix::["production"]'
+          elif [ "${CLUSTER}" = "staging and production" ]; then
+            echo '::set-output name=matrix::["staging", "production"]'
+          fi
+        env:
+          CLUSTER: ${{ github.event.inputs.cluster }}
+      - id: set-environment-name
+        name: Set up environment name
+        run: |-
+          if [ "ENVIRONMENT_NAME" = "all" ]; then
+            echo '::set-output name=environment-name::["Biomage", "trv"]'
+          elif [ "ENVIRONMENT_NAME" != "all" ]; then
+            echo '::set-output name=environment-name::["${ENVIRONMENT_NAME}"]'
+          fi
+        env:
+          ENVIRONMENT_NAME: ${{ github.environment_name }}
+
+  check-secrets:
+    name: Check secrets
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        environment-name: [Biomage, trv]
+        environment-name: ${{ fromJson(needs.setup.outputs.environment-name) }}
     environment: ${{ matrix.environment-name }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -91,29 +118,6 @@ jobs:
             echo Please make they are created by adding/rotating them manually.
             exit 1
           fi
-      - id: set-matrix
-        name: Set up cluster matrix
-        run: |-
-          if [ "${CLUSTER}" = "staging" ]; then
-            echo '::set-output name=matrix::["staging"]'
-          elif [ "${CLUSTER}" = "production" ]; then
-            echo '::set-output name=matrix::["production"]'
-          elif [ "${CLUSTER}" = "staging and production" ]; then
-            echo '::set-output name=matrix::["staging", "production"]'
-          fi
-        env:
-          CLUSTER: ${{ github.event.inputs.cluster }}
-
-      - id: set-environment-name
-        name: Set up environment name
-        run: |-
-          if [ "ENVIRONMENT_NAME" = "all" ]; then
-            echo '::set-output name=environment-name::["Biomage", "trv"]'
-          elif [ "ENVIRONMENT_NAME" != "all" ]; then
-            echo '::set-output name=environment-name::["${ENVIRONMENT_NAME}"]'
-          fi
-        env:
-          ENVIRONMENT_NAME: ${{ github.environment_name }}
 
   create-eks-cluster:
     name: Create EKS cluster
