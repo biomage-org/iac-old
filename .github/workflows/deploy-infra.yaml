@@ -37,30 +37,30 @@ jobs:
     name: Set up environment name and environment type for action run
     runs-on: ubuntu-20.04
     outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      environment_name: ${{ steps.set-environment-name.outputs.environment_name }}
+      environment_type: ${{ steps.set-env-type.outputs.env_type }}
+      environment_name: ${{ steps.set-env-name.outputs.env_name }}
     steps:
-      - id: set-matrix
+      - id: set-env-type
         name: Set up cluster matrix
         run: |-
           if [ "${CLUSTER}" = "staging" ]; then
-            echo 'matrix=["staging"]' >> $GITHUB_OUTPUT
+            echo 'env_type=["staging"]' >> $GITHUB_OUTPUT
           elif [ "${CLUSTER}" = "production" ]; then
-            echo 'matrix=["production"]' >> $GITHUB_OUTPUT
+            echo 'env_type=["production"]' >> $GITHUB_OUTPUT
           elif [ "${CLUSTER}" = "staging and production" ]; then
-            echo 'matrix=["staging", "production"]' >> $GITHUB_OUTPUT
+            echo 'env_type=["staging", "production"]' >> $GITHUB_OUTPUT
           fi
         env:
           CLUSTER: ${{ github.event.inputs.cluster }}
-      - id: set-environment-name
+      - id: set-env-name
         name: Set up environment name
         run: |-
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
-            echo 'environment_name=["Biomage", "trv"]' >> $GITHUB_OUTPUT
+            echo 'env_name=["Biomage", "trv"]' >> $GITHUB_OUTPUT
           elif [ "${ENVIRONMENT_NAME}" = "trv" ]; then
-            echo 'environment_name=["trv"]' >> $GITHUB_OUTPUT
+            echo 'env_name=["trv"]' >> $GITHUB_OUTPUT
           elif [ "${ENVIRONMENT_NAME}" = "Biomage" ]; then
-            echo 'environment_name=["Biomage"]' >> $GITHUB_OUTPUT
+            echo 'env_name=["Biomage"]' >> $GITHUB_OUTPUT
           fi
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
@@ -75,8 +75,8 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment-type: ${{ fromJson(needs.set-environments.outputs.matrix) }}
-        environment-name: ${{ fromJson(needs.set-environments.outputs.environment_name) }}
+        environment-type: ${{ fromJson(needs.set-environments.outputs.env_type) }}
+        environment-name: ${{ fromJson(needs.set-environments.outputs.env_name) }}
         exclude:
           - environment-name: trv
             environment-type: staging
@@ -173,8 +173,8 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment-type: ${{ fromJson(needs.set-environments.outputs.matrix) }}
-        environment-name: ${{ fromJson(needs.set-environments.outputs.environment_name) }}
+        environment-type: ${{ fromJson(needs.set-environments.outputs.env_type) }}
+        environment-name: ${{ fromJson(needs.set-environments.outputs.env_name) }}
         exclude:
           - environment-name: trv
             environment-type: staging
