@@ -33,7 +33,7 @@ env:
 concurrency: cluster-update-mutex
 
 jobs:
-  set-environments:
+  setup:
     name: Set up environment name and environment type for action run
     runs-on: ubuntu-20.04
     steps:
@@ -142,14 +142,14 @@ jobs:
   create-eks-cluster:
     name: Create EKS cluster
     runs-on: ubuntu-20.04
-    needs: [set-environments]
+    needs: [setup]
     env:
       CLUSTER_ENV: ${{ matrix.environment-type }}
     strategy:
       max-parallel: 1
       matrix:
-        environment-type: ${{ fromJson(needs.set-environments.outputs.matrix) }}
-        environment-name: ${{ fromJson(needs.set-environments.outputs.environment-name) }}
+        environment-type: ${{ fromJson(needs.setup.outputs.matrix) }}
+        environment-name: ${{ fromJson(needs.setup.outputs.environment-name) }}
         exclude:
           - environment-name: trv
             environment-type: staging
