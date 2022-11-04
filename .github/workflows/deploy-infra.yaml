@@ -60,10 +60,8 @@ jobs:
           echo "*********"
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
             echo '::set-output name=environment_name::["Biomage", "trv"]'
-          elif [ "${ENVIRONMENT_NAME}" = "trv" ]; then
-            echo '::set-output name=environment_name::["trv"]'
-          elif [ "${ENVIRONMENT_NAME}" = "Biomage" ]; then
-            echo '::set-output name=environment_name::["Biomage"]'
+          elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
+            echo '::set-output name=environment_name::["${ENVIRONMENT_NAME}"]'
           fi
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
