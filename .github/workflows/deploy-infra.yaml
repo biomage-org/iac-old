@@ -65,11 +65,63 @@ jobs:
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
 
+  check-secrets:
+    name: Check that sufficient secrets are specified for environment name
+    runs-on: ubuntu-20.04
+    needs: set-environments
+    strategy:
+      matrix:
+        environment-name: ${{ fromJson(needs.set-environments.outputs.env_name) }}
+    environment: ${{ matrix.environment-name }}
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: check-secrets-for-environment
+        name: Check if necessary secrets are installed.
+        run: |-
+          echo Checking if secrets are defined in the repository.
+          if [ -z "${{ secrets.ACM_CERTIFICATE_ARN}}" ]
+          then
+            echo AWS certificate ARN is not defined.
+            ERROR=true
+          fi
+          if [ -z "${{ secrets.AWS_ACCESS_KEY_ID }}" ]
+          then
+            echo AWS Access Key ID not defined.
+            ERROR=true
+          fi
+          if [ -z "${{ secrets.AWS_SECRET_ACCESS_KEY }}" ]
+          then
+            echo AWS Secret Access Key not defined.
+            ERROR=true
+          fi
+          if [ -z "${{ secrets.API_TOKEN_GITHUB }}" ]
+          then
+            echo GitHub deploy key access token not defined.
+            ERROR=true
+          fi
+          if [ -z "${{ secrets.PRIMARY_DOMAIN_NAME }}" ]
+          then
+            echo Secret PRIMARY_DOMAIN_NAME is not set in repository secrets. Make sure this secret exists in the repository secrets.
+            ERROR=true
+          fi
+          if [ -z "${{ secrets.DOMAIN_NAME }}" ]
+          then
+            echo Secret DOMAIN_NAME is not set in repository secrets. Make sure this secret exists in the repository secrets.
+            ERROR=true
+          fi
+          if [ ! -z "$ERROR" ]
+          then
+            echo
+            echo This workflow requires some secrets to complete.
+            echo Please make they are created by adding/rotating them manually.
+            exit 1
+          fi
 
   create-eks-cluster:
     name: Create EKS cluster
     runs-on: ubuntu-20.04
-    needs: set-environments
+    needs: [set-environments, check-secrets]
     env:
       CLUSTER_ENV: ${{ matrix.environment-type }}
     strategy:
@@ -165,7 +217,7 @@ jobs:
   configure-cluster:
     name: Configure Kubernetes resources on the EKS cluster
     runs-on: ubuntu-20.04
-    needs: [set-environments, create-eks-cluster]
+    needs: [check-secrets, set-environments, create-eks-cluster]
     if: always() && (needs.create-eks-cluster.result == 'success' || needs.create-eks-cluster.result == 'skipped')
     env:
       CLUSTER_ENV: ${{ matrix.environment-type }}
@@ -526,18 +578,18 @@ jobs:
   #             --username $user
   #         done < "infra/config/cluster/${{matrix.environment-name}}/cluster-admins-$CLUSTER_ENV"
 
-  # report-if-failed:
-  #   name: Report if workflow failed
-  #   runs-on: ubuntu-20.04
-  #   needs: [setup, create-eks-cluster, configure-cluster]
-  #   if: failure() && github.ref == 'refs/heads/master'
-  #   steps:
-  #     - id: send-to-slack
-  #       name: Send failure notification to Slack on failure
-  #       env:
-  #         SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
-  #       uses: voxmedia/github-action-slack-notify-build@v1
-  #       with:
-  #         channel: workflow-failures
-  #         status: FAILED
-  #         color: danger
+  report-if-failed:
+    name: Report if workflow failed
+    runs-on: ubuntu-20.04
+    needs: [check-secrets, setup, create-eks-cluster, configure-cluster]
+    if: failure() && github.ref == 'refs/heads/master'
+    steps:
+      - id: send-to-slack
+        name: Send failure notification to Slack on failure
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
+        uses: voxmedia/github-action-slack-notify-build@v1
+        with:
+          channel: workflow-failures
+          status: FAILED
+          color: danger
