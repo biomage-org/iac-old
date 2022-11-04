@@ -83,8 +83,9 @@ jobs:
     needs: [set-environments]
     strategy:
       matrix:
-        environment-name: ${{ fromJson(needs.set-environments.outputs.environment_name) }}
-    environment: ${{ matrix.environment-name }}
+        environment-type: ${{ fromJson(needs.set-environments.outputs.matrix) }}
+        # environment-name: ${{ fromJson(needs.set-environments.outputs.environment_name) }}
+    environment: trv
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
