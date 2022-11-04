@@ -53,15 +53,24 @@ jobs:
         name: Set up environment name
         run: |-
           if [ "${ENVIRONMENT_NAME}" = "all" ]; then
-            echo "Hello all"
-            echo 'environment-name=["Biomage", "trv"]' >> $GITHUB_OUTPUT
+            echo '::set-output name=environment_name::["Biomage", "trv"]'
           elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
-            echo "Hello NOT all"
-            echo 'environment-name=["trv"]' >> $GITHUB_OUTPUT
+            echo '::set-output name=environment_name::["trv"]'
           fi
-          echo ${GITHUB_OUTPUT}
         env:
           ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
+      # - id: set-environment-name
+      #   name: Set up environment name
+      #   run: |-
+      #     if [ "${ENVIRONMENT_NAME}" = "all" ]; then
+      #       echo "Hello all"
+      #       echo 'environment-name=["Biomage", "trv"]' >> $GITHUB_OUTPUT
+      #     elif [ "${ENVIRONMENT_NAME}" != "all" ]; then
+      #       echo "Hello NOT all"
+      #       echo 'environment-name=["trv"]' >> $GITHUB_OUTPUT
+      #     fi
+      #   env:
+      #     ENVIRONMENT_NAME: ${{ github.event.inputs.environment_name }}
 
   check-environment-secrets:
     name: Check secrets
@@ -69,7 +78,7 @@ jobs:
     needs: [set-environments]
     strategy:
       matrix:
-        environment-name: ${{ fromJson(needs.set-environments.outputs.environment-name) }}
+        environment-name: ${{ fromJson(needs.set-environments.outputs.environment_name) }}
     environment: ${{ matrix.environment-name }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
