@@ -37,8 +37,8 @@ jobs:
     name: Set up environment name and environment type for action run
     runs-on: ubuntu-20.04
     outputs:
-      environment_type: ${{ steps.set-env-type.outputs.env_type }}
-      environment_name: ${{ steps.set-env-name.outputs.env_name }}
+      env_type: ${{ steps.set-env-type.outputs.env_type }}
+      env_name: ${{ steps.set-env-name.outputs.env_name }}
     steps:
       - id: set-env-type
         name: Set up cluster matrix
@@ -75,7 +75,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        environment-type: ["staging"]
+        environment-type: ${{ fromJson(needs.set-environments.outputs.env_type) }}
         environment-name: ${{ fromJson(needs.set-environments.outputs.env_name) }}
         exclude:
           - environment-name: trv
