@@ -59,6 +59,7 @@ jobs:
             echo "Hello NOT all"
             echo 'environment-name=["trv"]' >> $GITHUB_OUTPUT
           fi
+          echo ${GITHUB_OUTPUT}
         env:
           ENVIRONMENT_NAME: ${{ github.environment_name }}
 
