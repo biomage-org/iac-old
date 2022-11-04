@@ -575,18 +575,18 @@ jobs:
   #             --username $user
   #         done < "infra/config/cluster/${{matrix.environment-name}}/cluster-admins-$CLUSTER_ENV"
 
-  report-if-failed:
-    name: Report if workflow failed
-    runs-on: ubuntu-20.04
-    needs: [setup, create-eks-cluster, configure-cluster]
-    if: failure() && github.ref == 'refs/heads/master'
-    steps:
-      - id: send-to-slack
-        name: Send failure notification to Slack on failure
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          channel: workflow-failures
-          status: FAILED
-          color: danger
+  # report-if-failed:
+  #   name: Report if workflow failed
+  #   runs-on: ubuntu-20.04
+  #   needs: [setup, create-eks-cluster, configure-cluster]
+  #   if: failure() && github.ref == 'refs/heads/master'
+  #   steps:
+  #     - id: send-to-slack
+  #       name: Send failure notification to Slack on failure
+  #       env:
+  #         SLACK_BOT_TOKEN: ${{ secrets.WORKFLOW_STATUS_BOT_TOKEN }}
+  #       uses: voxmedia/github-action-slack-notify-build@v1
+  #       with:
+  #         channel: workflow-failures
+  #         status: FAILED
+  #         color: danger
