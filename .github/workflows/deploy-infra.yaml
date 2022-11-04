@@ -74,7 +74,7 @@ jobs:
         run: |-
           echo ${TEST}
         env:
-          TEST: ${{ steps.set-environments.outputs.environment-name }}
+          TEST: ${{ steps.set-environments.outputs.IVA }}
 
     # strategy:
     #   matrix:
