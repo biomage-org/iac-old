@@ -73,7 +73,7 @@ jobs:
         run: |-
           echo ${TEST}
         env:
-          TEST: ${{ needs.set-environments.outputs.environment-name }}
+          TEST: ${{ steps.set-environments.outputs.environment-name }}
 
     # strategy:
     #   matrix:
