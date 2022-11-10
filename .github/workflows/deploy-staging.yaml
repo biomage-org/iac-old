@@ -257,7 +257,7 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           source_file: ${{ github.event.inputs.sandbox-id }}.yaml
-          destination_repo: ${{ github.repository_owner }}/releases
+          destination_repo: ${{ github.repository_owner }}/flux-v2-migration
           destination_folder: staging
           user_email: ci@biomage.net
           user_name: 'Biomage CI/CD'
