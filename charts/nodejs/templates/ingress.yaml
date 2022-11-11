@@ -12,11 +12,6 @@ metadata:
     sandboxId: "{{ .Values.biomageCi.sandboxId }}"
 
   annotations:
-{{- if .Values.ingress.annotations }}
-    {{ toYaml .Values.ingress.annotations | indent 4 }}
-{{- else }}
-    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.loadBalancerHealthCheck.path }}
-{{- end }}
 {{- if .Values.ingress.tls.enabled }}
     alb.ingress.kubernetes.io/actions.ssl-redirect: >-
       {"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port":
@@ -26,12 +21,13 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
 {{- end }}
     kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/success-codes: {{ .Values.loadBalancerHealthCheck.successCodes }}
-    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "{{ .Values.loadBalancerHealthCheck.periodSeconds }}"
-    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "{{ .Values.loadBalancerHealthCheck.timeoutSeconds }}"
-    alb.ingress.kubernetes.io/healthcheck-protocol: {{ .Values.loadBalancerHealthCheck.scheme }}
-    alb.ingress.kubernetes.io/healthy-threshold-count: "{{ .Values.loadBalancerHealthCheck.successThreshold }}"
-    alb.ingress.kubernetes.io/unhealthy-threshold-count: "{{ .Values.loadBalancerHealthCheck.failureThreshold }}"
+    alb.ingress.kubernetes.io/success-codes: {{ default .Values.loadBalancerHealthCheck.successCodes .Values.ingress.annotations.loadBalancerHealthCheck.successCodes }}
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: {{ default .Values.loadBalancerHealthCheck.periodSeconds .Values.ingress.annotations.loadBalancerHealthCheck.periodSeconds }}
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: {{ default .Values.loadBalancerHealthCheck.timeoutSeconds .Values.ingress.annotations.loadBalancerHealthCheck.timeoutSeconds }}
+    alb.ingress.kubernetes.io/healthcheck-protocol: {{ default .Values.loadBalancerHealthCheck.scheme .Values.ingress.annotations.loadBalancerHealthCheck.scheme }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ default .Values.loadBalancerHealthCheck.path .Values.ingress.annotations.loadBalancerHealthCheck.path }}
+    alb.ingress.kubernetes.io/healthy-threshold-count: {{ default .Values.loadBalancerHealthCheck.successThreshold .Values.ingress.annotations.loadBalancerHealthCheck.successThreshold }}
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: {{ default .Values.loadBalancerHealthCheck.failureThreshold .Values.ingress.annotations.loadBalancerHealthCheck.failureThreshold }}
     alb.ingress.kubernetes.io/group.name: {{ .Values.kubernetes.env }}
 spec:
   rules:
