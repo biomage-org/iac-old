@@ -13,7 +13,9 @@ metadata:
 
   annotations:
 {{- if .Values.ingress.annotations }}
-{{ toYaml .Values.ingress.annotations | indent 4 }}
+    {{ toYaml .Values.ingress.annotations | indent 4 }}
+{{- else }}
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.loadBalancerHealthCheck.path }}
 {{- end }}
 {{- if .Values.ingress.tls.enabled }}
     alb.ingress.kubernetes.io/actions.ssl-redirect: >-
@@ -27,7 +29,6 @@ metadata:
     alb.ingress.kubernetes.io/success-codes: {{ .Values.loadBalancerHealthCheck.successCodes }}
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: "{{ .Values.loadBalancerHealthCheck.periodSeconds }}"
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "{{ .Values.loadBalancerHealthCheck.timeoutSeconds }}"
-    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.loadBalancerHealthCheck.path }}
     alb.ingress.kubernetes.io/healthcheck-protocol: {{ .Values.loadBalancerHealthCheck.scheme }}
     alb.ingress.kubernetes.io/healthy-threshold-count: "{{ .Values.loadBalancerHealthCheck.successThreshold }}"
     alb.ingress.kubernetes.io/unhealthy-threshold-count: "{{ .Values.loadBalancerHealthCheck.failureThreshold }}"
