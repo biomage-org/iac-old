@@ -168,6 +168,6 @@ jobs:
           API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
         with:
           path: ./staging/${{ github.event.inputs.sandbox-id }}.yaml
-          destination_repo: ${{ github.repository_owner }}/releases
+          destination_repo: ${{ github.repository_owner }}/flux-v2-migration
           user_email: ci@biomage.net
           user_name: 'Biomage CI/CD'
