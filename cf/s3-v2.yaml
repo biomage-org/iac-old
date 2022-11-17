@@ -268,7 +268,7 @@ Resources:
             AllowedOrigins:
               - '*'
             Id: uiHeadersRule
-  CellSetsBucket:
+  CustomPlotsImagesBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "custom-plots-images-${Environment}-${AWS::AccountId}"
