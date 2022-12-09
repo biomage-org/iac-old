@@ -282,6 +282,14 @@ jobs:
         env:
           ENVIRONMENT_NAME: ${{ matrix.environment-name }}
 
+      - id: is-public-facing
+        name: Get config for whether monitoring should be enabled for deployment
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq '.[env(ENVIRONMENT_NAME)].publicFacing' 'infra/config/github-environments-config.yaml'
+        env:
+          ENVIRONMENT_NAME: ${{ matrix.environment-name }}
+
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
         run: |-
@@ -290,6 +298,7 @@ jobs:
             .myAccount.region = strenv(AWS_REGION) |
             .myAccount.accountId = strenv(AWS_ACCOUNT_ID) |
             .myAccount.acmCertificate = strenv(ACM_CERTIFICATE_ARN) |
+            .myAccount.publicFacing = env(IS_PUBLIC_FACING) |
             .myAccount.datadogEnabled = strenv(MONITORING_ENABLED) |
             .myAccount.datadogApiKey = ""
           ' infra/config/account-config.yaml
@@ -308,6 +317,7 @@ jobs:
           DOMAIN_NAME: ${{ steps.setup-domain.outputs.domain-name }}
           ACM_CERTIFICATE_ARN: ${{ secrets.ACM_CERTIFICATE_ARN }}
           MONITORING_ENABLED: ${{ steps.platform-monitoring-enabled.outputs.result }}
+          IS_PUBLIC_FACING: ${{ steps.is-public-facing.outputs.result }}
 
       - id: create-account-information-configmap
         name: Create a configmap containing AWS account specific details
