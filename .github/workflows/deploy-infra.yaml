@@ -346,11 +346,11 @@ jobs:
 
           print("PRIMARY_DOMAIN_NAME")
           for q in (os.getenv("PRIMARY_DOMAIN_NAME")):
-            print q
+            print(q)
 
           print("DOMAIN_NAME")
           for q in (os.getenv("DOMAIN_NAME")):
-            print q
+            print(q)
         shell: python
         env:
           PRIMARY_DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
