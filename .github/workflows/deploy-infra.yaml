@@ -339,6 +339,15 @@ jobs:
           echo "::set-output name=primary-domain-name::$PRIMARY_DOMAIN_NAME"
           echo "::set-output name=domain-name::$DOMAIN_NAME"
 
+      - id: echo-domain-names
+        name: Print out the domain names
+        run: |-
+          echo "PRIMARY_DOMAIN_NAME: $PRIMARY_DOMAIN_NAME"
+          echo "DOMAIN_NAME: $DOMAIN_NAME"
+        env:
+          PRIMARY_DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
+          DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
+
       - id: deploy-route53
         name: Deploy Route 53 DNS records to ELB
         uses: aws-actions/aws-cloudformation-github-deploy@v1
