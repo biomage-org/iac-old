@@ -23,10 +23,10 @@ metadata:
 {{- end }}
 {{- if eq .Values.myAccount.publicFacing "true" }}
     # alb.ingress.kubernetes.io/scheme: internet-facing
-    publicFacing: true
+    publicFacing: "true"
 {{- else }}
     # alb.ingress.kubernetes.io/scheme: internal
-    publicFacing: false
+    publicFacing: "false"
 {{- end }}
     alb.ingress.kubernetes.io/success-codes: {{ .Values.loadBalancerHealthCheck.successCodes }}
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: "{{ .Values.loadBalancerHealthCheck.periodSeconds }}"
