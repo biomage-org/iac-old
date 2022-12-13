@@ -354,7 +354,7 @@ jobs:
         shell: python
         env:
           PRIMARY_DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
-          DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
+          DOMAIN_NAME: ${{ steps.setup-domain.outputs.domain-name }}
 
       - id: deploy-route53
         name: Deploy Route 53 DNS records to ELB
