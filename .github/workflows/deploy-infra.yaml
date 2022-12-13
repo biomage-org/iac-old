@@ -308,13 +308,13 @@ jobs:
       #         --set acmCertificate=${{ secrets.ACM_CERTIFICATE_ARN }} \
       #         --install --wait
 
-      # - id: platform-public-facing
-      #   name: Get config for whether platform should be public facing
-      #   uses: mikefarah/yq@master
-      #   with:
-      #     cmd: yq '.[env(ENVIRONMENT_NAME)].publicFacing' 'infra/config/github-environments-config.yaml'
-      #   env:
-      #     ENVIRONMENT_NAME: ${{ matrix.environment-name }}
+      - id: platform-public-facing
+        name: Get config for whether platform should be public facing
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq '.[env(ENVIRONMENT_NAME)].publicFacing' 'infra/config/github-environments-config.yaml'
+        env:
+          ENVIRONMENT_NAME: ${{ matrix.environment-name }}
 
       # - id: deploy-env-loadbalancer
       #   name: Deploy AWS Application Load Balancer for environment
@@ -426,13 +426,13 @@ jobs:
       # ###
       # ### INSTALL AND CONFIGURE FLUX V2 ###
       # ###
-      # - id: platform-monitoring-enabled
-      #   name: Get config for whether monitoring should be enabled for deployment
-      #   uses: mikefarah/yq@master
-      #   with:
-      #     cmd: yq '.[env(ENVIRONMENT_NAME)].monitoringEnabled' 'infra/config/github-environments-config.yaml'
-      #   env:
-      #     ENVIRONMENT_NAME: ${{ matrix.environment-name }}
+      - id: platform-monitoring-enabled
+        name: Get config for whether monitoring should be enabled for deployment
+        uses: mikefarah/yq@master
+        with:
+          cmd: yq '.[env(ENVIRONMENT_NAME)].monitoringEnabled' 'infra/config/github-environments-config.yaml'
+        env:
+          ENVIRONMENT_NAME: ${{ matrix.environment-name }}
 
       - id: fill-account-specific-metadata
         name: Fill in account specific metadata in ConfigMap
