@@ -341,9 +341,17 @@ jobs:
 
       - id: echo-domain-names
         name: Print out the domain names
-        run: |-
-          echo "PRIMARY_DOMAIN_NAME: $PRIMARY_DOMAIN_NAME"
-          echo "DOMAIN_NAME: $DOMAIN_NAME"
+        run: |
+          import os
+
+          print("PRIMARY_DOMAIN_NAME")
+          for q in (os.getenv("PRIMARY_DOMAIN_NAME")):
+            print q
+
+          print("DOMAIN_NAME")
+          for q in (os.getenv("DOMAIN_NAME")):
+            print q
+      shell: python
         env:
           PRIMARY_DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
           DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
