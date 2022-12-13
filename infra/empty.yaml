@@ -32,22 +32,11 @@ Outputs:
     Export:
       Name: !Sub "DomainName-${Environment}"
 
+Conditions:
+  NeverTrue:
+    Fn::Equals: [ 'true', 'false' ]
+
 Resources:
-  IngressControllerMapping:
-    Type: AWS::Route53::RecordSetGroup
-    Properties:
-      # Hosted zone name requires a trailing dot. See:
-      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53-recordsetgroup.html
-      HostedZoneName: !Sub "${PrimaryDomainName}."
-      Comment: !Sub "Routing for Biomage SCP ${Environment} cluster"
-      RecordSets:
-      - Name: !Ref DomainName
-        Type: A
-        AliasTarget:
-          DNSName: !Ref DNSName
-          HostedZoneId: !Ref HostedZoneId
-      - Name: !Join ['.', ['*', !Ref DomainName]]
-        Type: A
-        AliasTarget:
-          DNSName: !Ref DNSName
-          HostedZoneId: !Ref HostedZoneId
+  NullResource:
+    Type: 'Custom::NullResource'
+    Condition: NeverTrue
