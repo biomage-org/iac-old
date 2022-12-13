@@ -22,9 +22,11 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS":443}]'
 {{- end }}
 {{- if eq .Values.myAccount.publicFacing "true" }}
-    alb.ingress.kubernetes.io/scheme: internet-facing
+    # alb.ingress.kubernetes.io/scheme: internet-facing
+    publicFacing: true
 {{- else }}
-    alb.ingress.kubernetes.io/scheme: internal
+    # alb.ingress.kubernetes.io/scheme: internal
+    publicFacing: false
 {{- end }}
     alb.ingress.kubernetes.io/success-codes: {{ .Values.loadBalancerHealthCheck.successCodes }}
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: "{{ .Values.loadBalancerHealthCheck.periodSeconds }}"
