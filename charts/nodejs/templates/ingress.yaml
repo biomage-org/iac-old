@@ -26,7 +26,6 @@ metadata:
 {{- else }}
     alb.ingress.kubernetes.io/scheme: internal
 {{- end }}
-{{- end}}
     alb.ingress.kubernetes.io/success-codes: {{ .Values.loadBalancerHealthCheck.successCodes }}
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: "{{ .Values.loadBalancerHealthCheck.periodSeconds }}"
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "{{ .Values.loadBalancerHealthCheck.timeoutSeconds }}"
