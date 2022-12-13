@@ -351,7 +351,7 @@ jobs:
           print("DOMAIN_NAME")
           for q in (os.getenv("DOMAIN_NAME")):
             print q
-      shell: python
+        shell: python
         env:
           PRIMARY_DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
           DOMAIN_NAME: ${{ steps.setup-domain.outputs.primary-domain-name }}
