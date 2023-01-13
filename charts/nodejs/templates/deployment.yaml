@@ -74,6 +74,9 @@ spec:
             fieldRef:
               fieldPath: metadata.name
 
+        - name: DEPLOYMENT_NAME
+          value: {{ .Values.myAccount.deploymentName | quote }}
+
         - name: DOMAIN_NAME
           value: {{ .Values.myAccount.domainName | quote }}
 
