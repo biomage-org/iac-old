@@ -29,8 +29,8 @@ data:
             reason: {{`{{ .Reason }}`}}
             message: {{`{{ .Message }}`}}
             involvedObject: {{`{{ toJson .InvolvedObject }}`}}
-            {{- if (eq 1 2) -}}
-            apiUrl: "equal true"
-            {{- else -}}
-            apiUrl: "equal false"
-            {{- end -}}
+        {{ if (eq .Values.myAccount.domainName "scp-staging.biomage.net") -}}
+            apiUrl: "api-default.{{ .Values.myAccount.domainName }}"
+        {{ else -}}
+            apiUrl: "api.{{ .Values.myAccount.domainName }}"
+        {{- end -}}
