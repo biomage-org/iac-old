@@ -26,7 +26,11 @@ data:
           region: {{ .Values.myAccount.region }}
           layout:
             type: kubernetes-event
-            reason: "{{ .Reason }}"
-            message: "{{ .Message }}"
-            involvedObject: "{{ toJson .InvolvedObject }}"
-            apiUrl: "api-default.{{ .Values.myAccount.domainName }}"
+            reason: {{`{{ .Reason }}`}}
+            message: {{`{{ .Message }}`}}
+            involvedObject: {{`{{ toJson .InvolvedObject }}`}}
+            {{- if (eq 1 2) -}}
+            apiUrl: "equal true"
+            {{- else -}}
+            apiUrl: "equal false"
+            {{- end -}}
