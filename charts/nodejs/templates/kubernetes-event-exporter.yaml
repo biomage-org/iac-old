@@ -36,21 +36,21 @@ metadata:
   # namespace: monitoring
 data:
 # {{ if eq .Values.myAccount.accountId "242905224710" }}
-  config.yaml: |
-    logLevel: info
-    logFormat: json
-    route:
-      match:
-        - reason: "BackOff"
-          receiver: "cleanup"
-      drop:
-        - type: "Normal"
-    receivers:
-      - name: "cleanup"
-        webhook:
-          endpoint: https://{{ template "hostname" .}}/v2/kubernetesEvents
-          headers:
-            User-Agent: kube-event-exporter 1.0
+#   config.yaml: |
+#     logLevel: info
+#     logFormat: json
+#     route:
+#       match:
+#         - reason: "BackOff"
+#           receiver: "cleanup"
+#       drop:
+#         - type: "Normal"
+#     receivers:
+#       - name: "cleanup"
+#         webhook:
+#           endpoint: https://{{ template "hostname" .}}/v2/kubernetesEvents
+#           headers:
+#             User-Agent: kube-event-exporter 1.0
 # {{ else }}
   config.yaml: |
     logLevel: info
