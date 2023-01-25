@@ -98,7 +98,6 @@ Resources:
         ZipFile: |
           from botocore.vendored import requests
           import json
-          import os
 
           def lambda_handler(event, context):
             print("EVENT: ", event)
@@ -127,9 +126,9 @@ Resources:
             }
 
             if message_body.get("reason") == "BackOff":
+                url = f"{message_body.get('apiUrl')}/v2/kkubernetesEvents"
                 data = message_body
                 headers = application_json_headers
-                url = f"{os.getenv('DOMAIN_NAME')}/v2/kubernetesEvents"
             elif sns_message_payload["MessageAttributes"]["type"]["Value"] == "PipelineResponse":
                 url = f"{message_body.get('apiUrl')}/v2/pipelineResults"
                 data = sns_message_payload
