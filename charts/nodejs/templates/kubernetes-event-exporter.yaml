@@ -65,14 +65,20 @@ data:
           topicARN: "arn:aws:sns:{{ .Values.myAccount.region }}:{{ .Values.myAccount.accountId }}:work-results-{{ .Values.kubernetes.env }}-default-v2"
           region: {{ .Values.myAccount.region }}
           layout:
-            type: kubernetes-event
+            type: {{`{{ .Type }}`}}
             reason: {{`{{ .Reason }}`}}
             message: {{`{{ .Message }}`}}
-            involvedObject: {{`{{ toJson .InvolvedObject }}`}}
+            firstTimestamp: {{`{{ .FirstTimestamp }}`}}
+            lastTimestamp: {{`{{ .LastTimestamp }}`}}
+            kind: {{`{{ .InvolvedObject.Kind }}`}}
+            namespace: {{`{{ .InvolvedObject.Namepace }}`}}
+            name: {{`{{ .InvolvedObject.Name }}`}}
+            labels: {{`{{ toJson .InvolvedObject.Labels }}`}}
+            annotations: {{`{{ toJson .InvolvedObject.annotations }}`}}
         {{ if (eq .Values.myAccount.domainName "scp-staging.biomage.net") -}}
-            apiUrl: "api-default.{{ .Values.myAccount.domainName }}"
+            apiUrl: "https://api-default.{{ .Values.myAccount.domainName }}"
         {{ else -}}
-            apiUrl: "api.{{ .Values.myAccount.domainName }}"
+            apiUrl: "https://api.{{ .Values.myAccount.domainName }}"
         {{- end -}}
 {{ end }}
 
