@@ -126,7 +126,7 @@ Resources:
             }
 
             if message_body.get("reason") == "BackOff":
-                url = f"{message_body.get('apiUrl')}/v2/kkubernetesEvents"
+                url = f"{message_body.get('apiUrl')}/v2/kubernetesEvents"
                 data = message_body
                 headers = application_json_headers
             elif sns_message_payload["MessageAttributes"]["type"]["Value"] == "PipelineResponse":
