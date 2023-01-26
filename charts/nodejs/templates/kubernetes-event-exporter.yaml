@@ -49,6 +49,22 @@ data:
           endpoint: https://{{ template "hostname" .}}/v2/kubernetesEvents
           headers:
             User-Agent: kube-event-exporter 1.0
+        layout:
+            type: {{`{{ .Type }}`}}
+            reason: {{`{{ .Reason }}`}}
+            message: {{`{{ .Message }}`}}
+            firstTimestamp: {{`{{ .FirstTimestamp }}`}}
+            lastTimestamp: {{`{{ .LastTimestamp }}`}}
+            kind: {{`{{ .InvolvedObject.Kind }}`}}
+            namespace: {{`{{ .InvolvedObject.Namespace }}`}}
+            name: {{`{{ .InvolvedObject.Name }}`}}
+            labels: {{`{{ toJson .InvolvedObject.Labels }}`}}
+            annotations: {{`{{ toJson .InvolvedObject.Annotations }}`}}
+        {{ if (eq .Values.myAccount.domainName "scp-staging.biomage.net") -}}
+            apiUrl: "https://api-default.{{ .Values.myAccount.domainName }}"
+        {{ else -}}
+            apiUrl: "https://api.{{ .Values.myAccount.domainName }}"
+        {{- end -}}
 {{ else }}
   config.yaml: |
     logLevel: info
