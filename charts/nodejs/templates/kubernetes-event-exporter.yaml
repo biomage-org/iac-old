@@ -74,7 +74,7 @@ data:
             namespace: {{`{{ .InvolvedObject.Namepace }}`}}
             name: {{`{{ .InvolvedObject.Name }}`}}
             labels: {{`{{ toJson .InvolvedObject.Labels }}`}}
-            annotations: {{`{{ toJson .InvolvedObject.annotations }}`}}
+            annotations: {{`{{ toJson .InvolvedObject.Annotations }}`}}
         {{ if (eq .Values.myAccount.domainName "scp-staging.biomage.net") -}}
             apiUrl: "https://api-default.{{ .Values.myAccount.domainName }}"
         {{ else -}}
