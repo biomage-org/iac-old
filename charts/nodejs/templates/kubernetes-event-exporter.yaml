@@ -49,7 +49,7 @@ data:
           endpoint: https://{{ template "hostname" .}}/v2/kubernetesEvents
           headers:
             User-Agent: kube-event-exporter 1.0
-        layout:
+          layout:
             type: {{`{{ .Type }}`}}
             reason: {{`{{ .Reason }}`}}
             message: {{`{{ .Message }}`}}
@@ -60,11 +60,7 @@ data:
             name: {{`{{ .InvolvedObject.Name }}`}}
             labels: {{`{{ toJson .InvolvedObject.Labels }}`}}
             annotations: {{`{{ toJson .InvolvedObject.Annotations }}`}}
-        {{ if (eq .Values.myAccount.domainName "scp-staging.biomage.net") -}}
-            apiUrl: "https://api-default.{{ .Values.myAccount.domainName }}"
-        {{ else -}}
-            apiUrl: "https://api.{{ .Values.myAccount.domainName }}"
-        {{- end -}}
+            apiUrl: https://{{ template "hostname" .}}
 {{ else }}
   config.yaml: |
     logLevel: info
@@ -91,11 +87,7 @@ data:
             name: {{`{{ .InvolvedObject.Name }}`}}
             labels: {{`{{ toJson .InvolvedObject.Labels }}`}}
             annotations: {{`{{ toJson .InvolvedObject.Annotations }}`}}
-        {{ if (eq .Values.myAccount.domainName "scp-staging.biomage.net") -}}
-            apiUrl: "https://api-default.{{ .Values.myAccount.domainName }}"
-        {{ else -}}
-            apiUrl: "https://api.{{ .Values.myAccount.domainName }}"
-        {{- end -}}
+            apiUrl: https://{{ template "hostname" .}}
 {{ end }}
 
 ---
