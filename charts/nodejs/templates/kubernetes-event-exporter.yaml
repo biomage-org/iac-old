@@ -71,7 +71,7 @@ data:
             firstTimestamp: {{`{{ .FirstTimestamp }}`}}
             lastTimestamp: {{`{{ .LastTimestamp }}`}}
             kind: {{`{{ .InvolvedObject.Kind }}`}}
-            namespace: {{`{{ .InvolvedObject.Namepace }}`}}
+            namespace: {{`{{ .InvolvedObject.Namespace }}`}}
             name: {{`{{ .InvolvedObject.Name }}`}}
             labels: {{`{{ toJson .InvolvedObject.Labels }}`}}
             annotations: {{`{{ toJson .InvolvedObject.Annotations }}`}}
