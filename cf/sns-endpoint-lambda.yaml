@@ -163,3 +163,10 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/sns-endpoint-lambda-${Environment}-${SandboxID}"
       RetentionInDays: 3
+
+Outputs:
+  SNSEndpointLambdaArn:
+    Description: The ARN of the endpoint lambda
+    Value: !GetAtt SNSEndpointLambda.Arn
+    Export:
+      Name: !Sub "sns-endpoint-lambda-${Environment}-${SandboxID}-v2::ARN"
