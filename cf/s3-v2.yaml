@@ -11,6 +11,8 @@ Parameters:
       - production
     Description: The environment for which the buckets need to be created.
 
+# If you add a new bucket, do not forget to configure MFA Delete on bucket :
+# https://github.com/biomage-org/developer-docs/wiki/Runbook:-Enable-MFA-Delete-on-S3-Buckets
 Resources:
   PlotsTablesBucket:
     Type: AWS::S3::Bucket
