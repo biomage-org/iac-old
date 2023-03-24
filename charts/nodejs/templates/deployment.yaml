@@ -40,11 +40,10 @@ spec:
     spec:
       serviceAccountName: deployment-runner
       imagePullSecrets:
-{{ toYaml .Values.image.secrets | indent 10 }}
-
+        - name: dockerhub-credentials
       containers:
       - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.registry }}/{{ (split "/" .Values.biomageCi.repo)._1 }}:{{ .Values.image.tag }}"
+        image: "cellenics/{{ (split "/" .Values.biomageCi.repo)._1 }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.application.secretName }}
 
