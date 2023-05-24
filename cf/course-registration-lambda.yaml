@@ -31,16 +31,7 @@ Resources:
                   - 'ses:SendEmail'
                   - 'ses:SendRawEmail'
                 Resource: "*"
-        - PolicyName: !Sub "can-get-email-attachment-${Environment}"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - 's3:GetObject'
-                Resource:
-                  - Fn::Sub: "arn:aws:s3:::biomage-data/*"
-
+                
         - PolicyName: !Sub "can-create-log-group-in-cloudwatch-${Environment}"
           PolicyDocument:
             Version: "2012-10-17"
