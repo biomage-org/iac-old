@@ -40,7 +40,7 @@ Resources:
                 Action:
                   - "logs:CreateLogGroup"
                 Resource:
-                  - Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/email-sender-lambda-${Environment}"
+                  - Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/course-registration-email-${Environment}"
                   
         - PolicyName: !Sub "can-add-logs-in-cloudwatch-${Environment}"
           PolicyDocument:
@@ -51,12 +51,12 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource:
-                  - Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/email-sender-lambda-${Environment}:*"
+                  - Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/course-registration-email-${Environment}:*"
 
   EmailSenderLambda:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: !Sub email-sender-lambda-${Environment}
+      FunctionName: !Sub course-registration-email-${Environment}
       Runtime: nodejs14.x
       Role: !GetAtt EmailSenderLambdaRole.Arn
       Handler: index.handler
@@ -151,7 +151,7 @@ Resources:
   LoggingGroup:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/email-sender-lambda-${Environment}"
+      LogGroupName: !Sub "/aws/lambda/course-registration-email-${Environment}"
       RetentionInDays: 1
 
   EmailSenderApi:
