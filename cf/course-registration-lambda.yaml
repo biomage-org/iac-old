@@ -76,7 +76,7 @@ Resources:
             const body = JSON.parse(event.body);
             const email = body.email;
             const fileName = 'payment_instructions.pdf'; // Set your filename here
-
+            console.log('body is ', body)  
             // Fetch file from Google Drive
             let file;
             try {
@@ -88,65 +88,66 @@ Resources:
 
               const arr = await toArray(response.data);
               file = Buffer.concat(arr).toString('base64');
-            } catch (err) {
-              console.log('Error fetching file', err);
-              callback(err);
-              return;
-            }
 
-            const rawEmail =
-              `From: 'Biomage Courses <courses@biomage.net>'\n` +
-              `To: ${email}\n` +
-              `Subject: 'Welcome to the course “Mastering Single Cell RNA-seq Data Analysis with Cellenics”'\n` +
-              `MIME-Version: 1.0\n` +
-              `Content-Type: multipart/mixed; boundary="NextPart"\n\n` +
-              
-              `--NextPart\n` +
-              `Content-Type: text/plain\n\n` +
-              `Hi,\n\n` +
-              
-              `Thank you for registering for our course “Mastering Single Cell RNA-seq Data Analysis with Cellenics”. In this email I’m sharing with you further details to get you started on the course.\n\n` +
-              
-              `The first lessons of the course are already available!\n\n` +
-              
-              `We will be releasing new lessons on a weekly basis until the end of the course. To enhance the learning experience and make the course more engaging and interactive, during the first 2 months we will be hosting optional live group sessions fortnightly, which all participants can join. During these sessions, we will answer any questions you may have, and you will have the opportunity to share how you are using Cellenics in your research project, if you wish. We will send you an invite for the first session soon. There are no deadlines for this course, and you will have access to all materials as long as you have registered and paid the fee.\n\n` +
-              
-              `If you will not follow the course on a weekly basis, don’t worry. You will always have access to the videos and you can watch them at your own pace. Furthermore, if you start the course later, you can still participate in the live group sessions whenever you choose. These sessions will not be a prerequisite and will not be linked to any specific module. They are just an optional extra to make the course more interactive. Please, note that the live group sessions will be offered only during the first two months.\n\n` +
-              
-              `To have access to the course, please follow these steps:\nBefore starting the course we kindly ask you to create a Cellenics account at scp.biomage.net, if you don’t have one already.\nSubmit payment for the $450 USD fee (payment instructions are attached to this email - please, contact us if the payment is handled by your institution and they require an invoice or further details). Please, when filling in the payment details, include the email address you used to register.\n\n` +
-              
-              `If you have any questions about payment or need assistance with the payment process, please don't hesitate to reach out to us. We are committed to ensuring a smooth and successful enrollment process for all of the participants.\n\n` +
-              
-              `Once the two steps are completed, we will send you the link to the first videos and the course material. Subsequently released lessons will always be accessible to you.\nYou will also receive a Calendly link where you can book your 30-minutes 1-2-1 meeting with one of our bioinformaticians.\n\n` +
-              
-              `Once again, thank you for your interest in the course, and we look forward to having you as a participant of our course.\n\n` +
-              
-              `Best wishes,\nBiomage team\n\n` +
-              
-              `--NextPart\n` +
-              `Content-Type: application/pdf; name="${fileName}"\n` +
-              `Content-Disposition: attachment; filename="${fileName}"\n` +
-              `Content-Transfer-Encoding: base64\n\n` +
-              `${file}\n\n` +
-              
-              `--NextPart--`;
+              const rawEmail =
+                `From: 'Biomage Courses <courses@biomage.net>'\n` +
+                `To: ${email}\n` +
+                `Subject: Welcome to the course “Mastering Single Cell RNA-seq Data Analysis with Cellenics”\n` +
+                `MIME-Version: 1.0\n` +
+                `Content-Type: multipart/mixed; boundary="NextPart"\n\n` +
+                
+                `--NextPart\n` +
+                `Content-Type: text/plain\n\n` +
+                `Hi,\n\n` +
+                
+                `Thank you for registering for our course “Mastering Single Cell RNA-seq Data Analysis with Cellenics”. In this email I’m sharing with you further details to get you started on the course.\n\n` +
+                
+                `The first lessons of the course are already available!\n\n` +
+                
+                `We will be releasing new lessons on a weekly basis until the end of the course. To enhance the learning experience and make the course more engaging and interactive, during the first 2 months we will be hosting optional live group sessions fortnightly, which all participants can join. During these sessions, we will answer any questions you may have, and you will have the opportunity to share how you are using Cellenics in your research project, if you wish. We will send you an invite for the first session soon. There are no deadlines for this course, and you will have access to all materials as long as you have registered and paid the fee.\n\n` +
+                
+                `If you will not follow the course on a weekly basis, don’t worry. You will always have access to the videos and you can watch them at your own pace. Furthermore, if you start the course later, you can still participate in the live group sessions whenever you choose. These sessions will not be a prerequisite and will not be linked to any specific module. They are just an optional extra to make the course more interactive. Please, note that the live group sessions will be offered only during the first two months.\n\n` +
+                
+                `To have access to the course, please follow these steps:\nBefore starting the course we kindly ask you to create a Cellenics account at scp.biomage.net, if you don’t have one already.\nSubmit payment for the $450 USD fee (payment instructions are attached to this email - please, contact us if the payment is handled by your institution and they require an invoice or further details). Please, when filling in the payment details, include the email address you used to register.\n\n` +
+                
+                `If you have any questions about payment or need assistance with the payment process, please don't hesitate to reach out to us. We are committed to ensuring a smooth and successful enrollment process for all of the participants.\n\n` +
+                
+                `Once the two steps are completed, we will send you the link to the first videos and the course material. Subsequently released lessons will always be accessible to you.\nYou will also receive a Calendly link where you can book your 30-minutes 1-2-1 meeting with one of our bioinformaticians.\n\n` +
+                
+                `Once again, thank you for your interest in the course, and we look forward to having you as a participant of our course.\n\n` +
+                
+                `Best wishes,\nBiomage team\n\n` +
+                
+                `--NextPart\n` +
+                `Content-Type: application/pdf; name="${fileName}"\n` +
+                `Content-Disposition: attachment; filename="${fileName}"\n` +
+                `Content-Transfer-Encoding: base64\n\n` +
+                `${file}\n\n` +
+                
+                `--NextPart--`;
+            
+            
+              const params = {
+                RawMessage: { Data: rawEmail },
+                Destinations: [email],
+                Source: 'courses@biomage.net',
+              };
 
-
-            const params = {
-              RawMessage: { Data: rawEmail },
-              Destinations: [email],
-              Source: 'your-email@example.com',
-            };
-
-            try {
               const data = await SES.sendRawEmail(params).promise();
               console.log(`Email sent to: ${email}`);
-              callback(null, data);
+              callback(null, {
+                  statusCode: 200,
+                  body: JSON.stringify({ status: 'success' })
+              });
             } catch (error) {
-              console.error(error);
-              callback(error);
+                console.error(error);
+                callback(null, {
+                    statusCode: 500,
+                    body: JSON.stringify({ status: 'failure' })
+                });
             }
           };
+
 
   LoggingGroup:
     Type: AWS::Logs::LogGroup
