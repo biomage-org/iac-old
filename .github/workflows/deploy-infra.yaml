@@ -384,16 +384,42 @@ jobs:
           echo "primary-domain-name=$PRIMARY_DOMAIN_NAME" >> $GITHUB_OUTPUT
           echo "domain-name=$DOMAIN_NAME" >> $GITHUB_OUTPUT
 
+      # Existing Route53 records have to be deleted so that we can deploy ELB-associated Route53 records
+      # Otherwise CloudFormation will fail saying the Route53 records exists
+      - id: check-for-existing-route53-records
+        name: Check for existing Route53 records
+        run: |-
+            HOSTED_ZONE_ID=$(aws route53 list-hosted-zones-by-name | jq ".HostedZones[0].Id" | sed 's/\/hostedzone\///g')
+            RECORD_SETS=$(aws route53 list-resource-record-sets --hosted-zone-id $HOSTED_ZONE_ID | jq ".ResourceRecordSets[] | select( .Name | match(\"^$DOMAIN_NAME\"))"
+
+            echo "hosted-zone-id=$HOSTED_ZONE_ID" >> $GITHUB_OUTPUT
+            echo "existing-route53-records=$RECORD_SETS" >> $GITHUB_OUTPUT
+
+      - id: delete-existing-route53-records
+        name: Delete existing Route53 records, if any
+        if: ${{ env.EXISTING_RECORDS != '' }}
+        env:
+            DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+            PRIMARY_DOMAIN_NAME: ${{ secrets.PRIMARY_DOMAIN_NAME }}
+            HOSTED_ZONE_ID: ${{ steps.check-for-existing-route53-records.outputs.hosted-zone-id }}
+            EXISTING_RECORDS: ${{ steps.check-for-existing-route53-records.outputs.existing-route53-records }}
+        run: |-
+            sed "s/DOMAIN_NAME/$DOMAIN_NAME/g" infra/route53/route53-changes.json >>  /temp/delete-route53-records.json
+
+            aws route53 change-resource-record-sets \
+                --hosted-zone-id $HOSTED_ZONE_ID \
+                --change-batch file:///tmp/delete-route53-records.json
+
       # This is commented out because running Route53 for trv is still causing an error.
       # A ticket to address this issue has been made: BIOMAGE-2314. Refer to the ticket for more information.
-      # - id: deploy-route53
-      #   name: Deploy Route 53 DNS records to ELB
-      #   uses: aws-actions/aws-cloudformation-github-deploy@v1
-      #   with:
-      #     parameter-overrides: "Environment=${{ matrix.environment-type }},DNSName=${{ steps.deploy-env-loadbalancer.outputs.DNSName }},HostedZoneId=${{ steps.deploy-env-loadbalancer.outputs.CanonicalHostedZoneID }},PrimaryDomainName=${{ steps.setup-domain.outputs.primary-domain-name }},DomainName=${{ steps.setup-domain.outputs.domain-name }}"
-      #     name: "biomage-alb-route53-${{ matrix.environment-type }}"
-      #     template: 'infra/cf-route53.yaml'
-      #     no-fail-on-empty-changeset: "1"
+      - id: deploy-route53
+        name: Deploy Route 53 DNS records to ELB
+        uses: aws-actions/aws-cloudformation-github-deploy@v1
+        with:
+          parameter-overrides: "Environment=${{ matrix.environment-type }},DNSName=${{ steps.deploy-env-loadbalancer.outputs.DNSName }},HostedZoneId=${{ steps.deploy-env-loadbalancer.outputs.CanonicalHostedZoneID }},PrimaryDomainName=${{ steps.setup-domain.outputs.primary-domain-name }},DomainName=${{ steps.setup-domain.outputs.domain-name }}"
+          name: "biomage-alb-route53-${{ matrix.environment-type }}"
+          template: 'infra/cf-route53.yaml'
+          no-fail-on-empty-changeset: "1"
 
       - id: deploy-xray-daemon
         name: Deploy AWS X-Ray daemon
