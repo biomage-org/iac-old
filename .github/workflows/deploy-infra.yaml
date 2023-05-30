@@ -158,6 +158,11 @@ jobs:
       matrix:
         environment-type: ${{ fromJson(needs.set-environments.outputs.env-type) }}
         environment-name: ${{ fromJson(needs.set-environments.outputs.env-name) }}
+        exclude:
+            - environment-name: trv
+              environment-type: staging
+            - environment-name: alabs
+              environment-type: staging
     environment: ${{ matrix.environment-name }}
     if: github.event.inputs.workflow_actions == 'create and configure cluster'
     steps:
