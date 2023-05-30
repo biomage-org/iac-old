@@ -17,11 +17,49 @@ Outputs:
     Value: !GetAtt PostRegisterLambda.Arn
     Export:
       Name: !Sub PostRegisterLambdaArn-${Environment}
+  InvokePostRegisterLambdaRoleArn:
+    Description: ARN of the UI role
+    Value: !GetAtt InvokePostRegisterLambdaRole.Arn
+    Export:
+      Name: !Sub 'InvokePostRegisterLambdaRoleArn-${Environment}'
 
 Conditions:
   isProd: !Equals [!Ref Environment, "production"]
 
 Resources:
+  InvokePostRegisterLambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "biomage-invoke-post-register-lambda-role-${Environment}"
+      AssumeRolePolicyDocument: |-
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        }
+      Path: /
+      Policies:
+        - PolicyName: !Sub "can-execute-lambda-${Environment}"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: !GetAtt PostRegisterLambda.Arn
   PostRegisterLambdaRole:
     Type: "AWS::IAM::Role"
     Properties:
