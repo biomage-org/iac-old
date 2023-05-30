@@ -1,0 +1,7 @@
+production:
+  - Biomage
+  - alabs
+  - trv
+
+staging:
+  - Biomage
