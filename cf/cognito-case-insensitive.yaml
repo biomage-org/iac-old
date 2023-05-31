@@ -105,6 +105,7 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: !Sub "biomage-user-pool-case-insensitive-${Environment}"
+      DeletionProtection: ACTIVE
       AccountRecoverySetting:
         RecoveryMechanisms:
           - Name: verified_email
