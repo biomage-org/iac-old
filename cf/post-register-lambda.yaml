@@ -189,3 +189,12 @@ Resources:
     Properties:
       LogGroupName: !Sub "/aws/lambda/post-invite-registration-lambda-${Environment}"
       RetentionInDays: 14
+
+  PostRegisterLambdaInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !Ref PostRegisterLambda
+      Principal: "cognito-idp.amazonaws.com"
+      SourceArn:
+        Fn::ImportValue: !Sub "biomage-user-pool-case-insensitive-${Environment}::UserPoolArn"
