@@ -85,3 +85,44 @@ Resources:
       Roles:
         "authenticated":
           Fn::ImportValue: !Sub "biomage-user-pool-case-insensitive-${Environment}::UIRoleArn"
+
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: !Sub "identity-pool-${Environment}-${SandboxID}"
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId: !Ref UserPoolClientCluster
+          ProviderName:
+            Fn::ImportValue: !Sub "biomage-user-pool-case-insensitive-${Environment}::UserPoolProviderName"
+
+  IdentityPoolRoleAttachment:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        "authenticated": !GetAtt AuthedUserRole.Arn
+
+  AuthedUserRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "authed-user-role-${Environment}"
+      AssumeRolePolicyDocument: |-
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Sid": "",
+              "Effect": "Allow",
+              "Principal": {
+                "Federated": "cognito-identity.amazonaws.com"
+              },
+              "Action": "sts:AssumeRoleWithWebIdentity",
+              "Condition": {
+                "ForAnyValue:StringLike": {
+                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                }
+              }
+            }
+          ]
+        }

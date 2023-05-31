@@ -19,10 +19,6 @@ Outputs:
     Value: !Ref UserPool
     Export:
       Name: !Sub 'biomage-user-pool-case-insensitive-${Environment}::UserPoolId'
-  UserPoolArn:
-    Value: !GetAtt  UserPool.Arn
-    Export:
-      Name: !Sub 'biomage-user-pool-case-insensitive-${Environment}::UserPoolArn'
   UserPoolProviderName:
     Description: Address to use to connect to Primary Cluster endpoint
     Value: !GetAtt UserPool.ProviderName
@@ -176,3 +172,13 @@ Resources:
     Properties:
       UserPoolId: !Ref UserPool
       Domain: !Sub "biomage-auth-${Environment}-${AWS::AccountId}"
+
+  # Add permission to allow userpool to trigger lambda
+  PostRegisterLambdaInvocationPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName:
+        Fn::ImportValue: !Sub PostRegisterLambdaArn-${Environment}
+      Principal: "cognito-idp.amazonaws.com"
+      SourceArn: !GetAtt UserPool.Arn
