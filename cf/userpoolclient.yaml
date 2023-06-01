@@ -61,7 +61,7 @@ Resources:
       SupportedIdentityProviders:
         - COGNITO
 
-  IdentityPool:
+  FileUploadIdentityPool:
     Type: AWS::Cognito::IdentityPool
     Properties:
       IdentityPoolName: !Sub "identity-pool-${Environment}-${SandboxID}"
@@ -74,7 +74,7 @@ Resources:
   IdentityPoolRoleAttachment:
     Type: AWS::Cognito::IdentityPoolRoleAttachment
     Properties:
-      IdentityPoolId: !Ref IdentityPool
+      IdentityPoolId: !Ref FileUploadIdentityPool
       Roles:
         "authenticated": !GetAtt AuthedUserRole.Arn
 
