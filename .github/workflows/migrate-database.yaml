@@ -100,6 +100,7 @@ jobs:
 
           git config --global url."https://".insteadOf ssh://
           npm ci
+          npm link object-hash
           npm install -g knex
 
       - id: run-migration
